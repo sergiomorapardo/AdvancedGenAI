@@ -39,65 +39,67 @@ GIT!! Unfortunatelly out of the scope of this class, but please take a look at t
 
 ## Schedule
 
+*Sessions are weekly on Saturdays, Aug 1 - Oct 17, 2026.*
+
 ### 1. Intro to LLMs & Prompt Engineering
 | Date | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| TBD | Introduction to Large Language Models & Prompt Engineering | [L1 - Intro to LLMs](./notebooks/L1-IntroToLLMs.ipynb) | |
+| August 1st, 2026 | Introduction to Large Language Models & Prompt Engineering | [L1 - Intro to LLMs](./notebooks/L1-IntroToLLMs.ipynb) | |
 
 ### 2. Working with LLM APIs (OpenAI, Anthropic/Claude)
 | Date | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| TBD | Calling LLM APIs: OpenAI and Anthropic/Claude | | |
+| August 8th, 2026 | Calling LLM APIs: OpenAI and Anthropic/Claude | | |
 
 ### 3. Embeddings & Vector Databases (FAISS, Chroma)
 | Date | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| TBD | Embeddings and Vector Databases with FAISS and Chroma | | |
+| August 15th, 2026 | Embeddings and Vector Databases with FAISS and Chroma | | |
 
 ### 4. RAG basics
 | Date | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| TBD | Retrieval-Augmented Generation fundamentals | | |
+| August 22nd, 2026 | Retrieval-Augmented Generation fundamentals | | |
 
 ### 5. Advanced RAG (re-ranking, hybrid search, query transformation)
 | Date | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| TBD | Advanced RAG: re-ranking, hybrid search and query transformation | | |
+| August 29th, 2026 | Advanced RAG: re-ranking, hybrid search and query transformation | | |
 
 ### 6. AI Agents fundamentals (ReAct, tool use, function calling)
 | Date | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| TBD | AI Agents: ReAct, tool use and function calling | | |
+| September 5th, 2026 | AI Agents: ReAct, tool use and function calling | | |
 
 ### 7. LangChain
 | Date | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| TBD | Building LLM applications with LangChain | | |
+| September 12th, 2026 | Building LLM applications with LangChain | | |
 
 ### 8. LangGraph (stateful/multi-step agents)
 | Date | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| TBD | Stateful, multi-step agents with LangGraph | | |
+| September 19th, 2026 | Stateful, multi-step agents with LangGraph | | |
 
 ### 9. MCP - Model Context Protocol
 | Date | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| TBD | Connecting tools and data with the Model Context Protocol | | |
+| September 26th, 2026 | Connecting tools and data with the Model Context Protocol | | |
 
 ### 10. Multi-agent systems
 | Date | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| TBD | Designing and orchestrating multi-agent systems | | |
+| October 3rd, 2026 | Designing and orchestrating multi-agent systems | | |
 
 ### 11. Evaluation of LLM apps (LLM-as-judge, RAGAS)
 | Date | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| TBD | Evaluating LLM applications: LLM-as-judge and RAGAS | | |
+| October 10th, 2026 | Evaluating LLM applications: LLM-as-judge and RAGAS | | |
 
 ### 12. LLMOps & Deployment
 | Date | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| TBD | LLMOps: deploying and monitoring LLM applications | | |
+| October 17th, 2026 | LLMOps: deploying and monitoring LLM applications | | |
 
 ## Interest Links 🔗
 Module | Topic | Material |
