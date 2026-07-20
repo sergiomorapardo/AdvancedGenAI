@@ -1,0 +1,13 @@
+langchain
+langgraph
+langchain-openai
+langchain-anthropic
+openai
+anthropic
+chromadb
+faiss-cpu
+sentence-transformers
+tiktoken
+ragas
+python-dotenv
+jupyter
