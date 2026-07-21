@@ -9,6 +9,39 @@
 This course is the second part of *Advanced Topics in Analytics*, moving from classic NLP and Graph Learning into the world of **Generative AI**. Students will learn how to build real applications powered by **Large Language Models (LLMs)**, covering prompt engineering, working with commercial LLM APIs (OpenAI, Anthropic/Claude), embeddings and vector databases, **Retrieval-Augmented Generation (RAG)** from basics to advanced techniques (re-ranking, hybrid search, query transformation), **AI agents** (ReAct, tool use, function calling), orchestration frameworks such as **LangChain** and **LangGraph**, the **Model Context Protocol (MCP)**, multi-agent systems, evaluation of LLM applications (LLM-as-judge, RAGAS) and **LLMOps** for deployment. The course is project-oriented, with emphasis placed on writing software implementations that solve real-world problems end to end.
 
 
+## Motivation
+
+The original course (*Advanced Topics in Analytics*) taught students to **understand** language models — the NLP, embeddings and transformer foundations of how they work. This course takes the next step: it teaches students to **build** real systems that *use* those models, moving them from consumers of AI to engineers of AI.
+
+Why this matters:
+
+* **Employability** — RAG, LLM evaluation and LLMOps are precisely the skills companies are hiring GenAI and AI-application engineers for today.
+* **Higher-order skills** — students progress from merely *applying* AI to *designing, evaluating and creating* AI systems.
+* **Transferable, vendor-independent engineering** — the fundamentals of RAG, evaluation and agent architecture outlast any single model, provider or framework.
+
+And one honest note: students will also learn **when *not* to reach for a heavy framework**. Recognizing that a direct API call is enough for the task at hand is itself a mark of good engineering judgment.
+
+
+## Learning Outcomes
+
+By the end of the course, students will be able to **design, connect (to real data), evaluate and deploy** LLM-powered applications.
+
+| Module | Learning outcome |
+| :----| :------------- |
+| Intro to LLMs & Prompt Engineering | Explain how LLMs work and craft effective, structured prompts. |
+| Working with LLM APIs | Integrate OpenAI and Anthropic APIs; manage tokens, parameters and streaming. |
+| Embeddings & Vector Databases | Represent text as embeddings and store/query them in FAISS and Chroma. |
+| RAG fundamentals | Build a retrieval-augmented pipeline that grounds an LLM on external data. |
+| Advanced RAG | Improve retrieval with re-ranking, hybrid search and query transformation. |
+| AI Agents fundamentals | Design agents that reason and use tools (ReAct, function calling). |
+| LangChain | Compose LLM applications with chains, memory and tools. |
+| LangGraph | Build stateful, multi-step agent workflows with explicit control flow. |
+| MCP | Connect agents to external tools and data through the Model Context Protocol. |
+| Multi-agent systems | Orchestrate multiple collaborating agents for complex tasks. |
+| Evaluation of LLM apps | Measure quality with RAGAS and LLM-as-judge instead of relying on vibe-checks. |
+| LLMOps & Deployment | Deploy, monitor and manage the cost/latency of LLM apps in production. |
+
+
 ## Requiriments
 * [Python](http://www.python.org) version >= 3.10;
 * [LangChain](https://python.langchain.com), framework for building LLM applications;
