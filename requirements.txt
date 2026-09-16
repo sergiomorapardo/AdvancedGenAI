@@ -11,3 +11,7 @@ tiktoken
 ragas
 python-dotenv
 jupyter
+langchain-community
+pypdf
+langchain_chroma
+langchain_core
