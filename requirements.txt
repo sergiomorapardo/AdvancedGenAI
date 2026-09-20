@@ -8,10 +8,12 @@ chromadb
 faiss-cpu
 sentence-transformers
 tiktoken
-ragas
+openevals
 python-dotenv
 jupyter
 langchain-community
 pypdf
 langchain_chroma
 langchain_core
+langsmith
+pandas
