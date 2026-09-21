@@ -35,6 +35,7 @@ dev = [
     "langgraph-cli[inmem]>=0.4.31",
     # Studio necesita langgraph-api >= 0.11 para las trazas embebidas
     "langgraph-api>=0.11.0",
+    "grandalf>=0.8",
 ]
 
 [tool.uv.build-backend]
