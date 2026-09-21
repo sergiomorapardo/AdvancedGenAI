@@ -31,11 +31,15 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "ipykernel>=7.3.0",
     "langgraph-cli[inmem]>=0.4.31",
+    # Studio necesita langgraph-api >= 0.11 para las trazas embebidas
+    "langgraph-api>=0.11.0",
 ]
 
-[project.scripts]
-advancedgenai = "advancedgenai:main"
+[tool.uv.build-backend]
+# La distribución se llama advancedgenai; los módulos importables son `agents` y `api`
+module-name = ["agents", "api"]
 
 [build-system]
 requires = ["uv_build>=0.12.10,<0.13.0"]
