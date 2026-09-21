@@ -1,0 +1,47 @@
+[project]
+name = "advancedgenai"
+version = "0.1.0"
+description = "Notebooks y agentes del curso Advanced GenAI (LangChain, LangGraph, LangSmith)"
+readme = "README.md"
+authors = [
+    { name = "Sergio Mora", email = "sergioa.mora@javeriana.edu.co" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "langchain>=1.4.2",
+    "langchain-core>=1.6.3",
+    "langchain-community>=0.4.2",
+    "langchain-openai>=1.6.2",
+    "langchain-anthropic>=1.7.2",
+    "langchain-chroma>=1.1.0",
+    "langgraph>=1.2.11",
+    "langsmith>=0.12.4",
+    "openevals>=0.2.0",
+    "openai>=3.13.0",
+    "anthropic>=1.6.0",
+    "chromadb>=1.5.9",
+    "faiss-cpu>=1.15.0",
+    "sentence-transformers",
+    "tiktoken>=0.14.0",
+    "pypdf>=6.18.1",
+    "pandas>=3.0.5",
+    "python-dotenv>=1.2.3",
+    "jupyter",
+]
+
+[dependency-groups]
+dev = [
+    "ipykernel>=7.3.0",
+    "langgraph-cli[inmem]>=0.4.31",
+    # Studio necesita langgraph-api >= 0.11 para las trazas embebidas
+    "langgraph-api>=0.11.0",
+    "grandalf>=0.8",
+]
+
+[tool.uv.build-backend]
+# La distribución se llama advancedgenai; los módulos importables son `agents` y `api`
+module-name = ["agents", "api"]
+
+[build-system]
+requires = ["uv_build>=0.12.10,<0.13.0"]
+build-backend = "uv_build"
