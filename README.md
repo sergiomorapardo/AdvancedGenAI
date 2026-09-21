@@ -1,12 +1,14 @@
 # Advanced Topics in Analytics II - Generative AI
 
+> **Status: Course proposal · In development.** Proposed for Pontificia Universidad Javeriana. Approval, delivery dates, and teaching hours are pending confirmation.
+
 *Instructor: Sergio A. Mora Pardo*
 
 - email: <sergioa.mora@javeriana.edu.co>
 - github: [sergiomorapardo](https://github.com/sergiomorapardo)
 
 
-This course is the second part of *Advanced Topics in Analytics*, moving from classic NLP and Graph Learning into the world of **Generative AI**. Students will learn how to build real applications powered by **Large Language Models (LLMs)**, covering prompt engineering, working with commercial LLM APIs (OpenAI, Anthropic/Claude), embeddings and vector databases, **Retrieval-Augmented Generation (RAG)** from basics to advanced techniques (re-ranking, hybrid search, query transformation), **AI agents** (ReAct, tool use, function calling), orchestration frameworks such as **LangChain** and **LangGraph**, the **Model Context Protocol (MCP)**, multi-agent systems, evaluation of LLM applications (LLM-as-judge, RAGAS) and **LLMOps** for deployment. The course is project-oriented, with emphasis placed on writing software implementations that solve real-world problems end to end.
+This proposed course builds on *Advanced Topics in Analytics*, moving from classic NLP and Graph Learning into the world of **Generative AI**. Students will learn how to build real applications powered by **Large Language Models (LLMs)**, covering prompt engineering, working with commercial LLM APIs (OpenAI, Anthropic/Claude), embeddings and vector databases, **Retrieval-Augmented Generation (RAG)** from basics to advanced techniques (re-ranking, hybrid search, query transformation), **AI agents** (ReAct, tool use, function calling), orchestration frameworks such as **LangChain** and **LangGraph**, the **Model Context Protocol (MCP)**, multi-agent systems, evaluation of LLM applications (LLM-as-judge, RAGAS) and **LLMOps** for deployment. The course is project-oriented, with emphasis placed on writing software implementations that solve real-world problems end to end.
 
 
 ## Motivation
@@ -42,7 +44,7 @@ By the end of the course, students will be able to **design, connect (to real da
 | LLMOps & Deployment | Deploy, monitor and manage the cost/latency of LLM apps in production. |
 
 
-## Requiriments
+## Requirements
 * [Python](http://www.python.org) version >= 3.10;
 * [LangChain](https://python.langchain.com), framework for building LLM applications;
 * [LangGraph](https://langchain-ai.github.io/langgraph/), library for stateful, multi-step agents;
@@ -64,75 +66,75 @@ You will need API keys to work with commercial LLMs. Copy [`.env.example`](./.en
 
 GIT!! Unfortunatelly out of the scope of this class, but please take a look at these [tutorials](https://help.github.com/articles/good-resources-for-learning-git-and-github/)
 
-## Evaluation
+## Proposed Evaluation
 
 * 50% Project
 * 40% Exercises
 * 10% Class participation
 
-## Schedule
+## Proposed Schedule
 
-*Sessions are weekly on Saturdays, Aug 1 - Oct 17, 2026.*
+*Draft sequence of 12 weekly sessions. Calendar dates will be added once the course is approved and scheduled.*
 
 ### 1. Intro to LLMs & Prompt Engineering
-| Date | Session | Notebooks/Presentations | Exercises |
+| Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| August 1st, 2026 | Introduction to Large Language Models & Prompt Engineering | [L1 - Intro to LLMs](./notebooks/L1-IntroToLLMs.ipynb) | |
+| Week 1 | Introduction to Large Language Models & Prompt Engineering | [L1 - Intro to LLMs](./notebooks/L1-IntroToLLMs.ipynb) | |
 
 ### 2. Working with LLM APIs (OpenAI, Anthropic/Claude)
-| Date | Session | Notebooks/Presentations | Exercises |
+| Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| August 8th, 2026 | Calling LLM APIs: OpenAI and Anthropic/Claude | | |
+| Week 2 | Calling LLM APIs: OpenAI and Anthropic/Claude | | |
 
 ### 3. Embeddings & Vector Databases (FAISS, Chroma)
-| Date | Session | Notebooks/Presentations | Exercises |
+| Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| August 15th, 2026 | Embeddings and Vector Databases with FAISS and Chroma | | |
+| Week 3 | Embeddings and Vector Databases with FAISS and Chroma | | |
 
 ### 4. RAG basics
-| Date | Session | Notebooks/Presentations | Exercises |
+| Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| August 22nd, 2026 | Retrieval-Augmented Generation fundamentals | | |
+| Week 4 | Retrieval-Augmented Generation fundamentals | | |
 
 ### 5. Advanced RAG (re-ranking, hybrid search, query transformation)
-| Date | Session | Notebooks/Presentations | Exercises |
+| Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| August 29th, 2026 | Advanced RAG: re-ranking, hybrid search and query transformation | | |
+| Week 5 | Advanced RAG: re-ranking, hybrid search and query transformation | | |
 
 ### 6. AI Agents fundamentals (ReAct, tool use, function calling)
-| Date | Session | Notebooks/Presentations | Exercises |
+| Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| September 5th, 2026 | AI Agents: ReAct, tool use and function calling | | |
+| Week 6 | AI Agents: ReAct, tool use and function calling | | |
 
 ### 7. LangChain
-| Date | Session | Notebooks/Presentations | Exercises |
+| Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| September 12th, 2026 | Building LLM applications with LangChain | | |
+| Week 7 | Building LLM applications with LangChain | | |
 
 ### 8. LangGraph (stateful/multi-step agents)
-| Date | Session | Notebooks/Presentations | Exercises |
+| Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| September 19th, 2026 | Stateful, multi-step agents with LangGraph | | |
+| Week 8 | Stateful, multi-step agents with LangGraph | | |
 
 ### 9. MCP - Model Context Protocol
-| Date | Session | Notebooks/Presentations | Exercises |
+| Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| September 26th, 2026 | Connecting tools and data with the Model Context Protocol | | |
+| Week 9 | Connecting tools and data with the Model Context Protocol | | |
 
 ### 10. Multi-agent systems
-| Date | Session | Notebooks/Presentations | Exercises |
+| Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| October 3rd, 2026 | Designing and orchestrating multi-agent systems | | |
+| Week 10 | Designing and orchestrating multi-agent systems | | |
 
 ### 11. Evaluation of LLM apps (LLM-as-judge, RAGAS)
-| Date | Session | Notebooks/Presentations | Exercises |
+| Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| October 10th, 2026 | Evaluating LLM applications: LLM-as-judge and RAGAS | | |
+| Week 11 | Evaluating LLM applications: LLM-as-judge and RAGAS | | |
 
 ### 12. LLMOps & Deployment
-| Date | Session | Notebooks/Presentations | Exercises |
+| Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| October 17th, 2026 | LLMOps: deploying and monitoring LLM applications | | |
+| Week 12 | LLMOps: deploying and monitoring LLM applications | | |
 
 ## Interest Links 🔗
 Module | Topic | Material |
@@ -144,4 +146,4 @@ Module | Topic | Material |
 
 ---
 
-> 📚 This course is a continuation ("part 2") of [Advanced Topics in Analytics](https://github.com/sergiomorapardo/AdvancedTopicsAnalytics), which covered MLOps, Deep Learning, NLP and Graph Learning.
+> 📚 This course is a proposed continuation ("part 2") of [Advanced Topics in Analytics](https://github.com/sergiomorapardo/AdvancedTopicsAnalytics), which covered MLOps, Deep Learning, NLP and Graph Learning.
