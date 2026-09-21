@@ -1,7 +1,8 @@
-from typing import TypedDict
 from langgraph.graph import StateGraph, START, END
+from langgraph.graph import MessagesState, MessageGraph
+from langchain.messages import AIMessage
 
-class State(TypedDict):
+class State(MessagesState):
     customer_name: str
     my_age: str
 
@@ -12,9 +13,11 @@ def node_1(state: State):
         return {
             "customer_name": "John Doe"
         }
-    return {
-        "my_age": 20
-    }
+    else:
+        ai_message = AIMessage(content="Hello, how can i help you today?")
+        return {
+            "messages": [ai_message]
+        }
 
 
 builder = StateGraph(State)
