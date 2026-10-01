@@ -134,12 +134,27 @@ uv sync --locked --no-dev
 uv run --no-sync python -m unittest discover -s tests -v
 ```
 
-The repository's `main protection` ruleset requires the `unit-tests` check from
-GitHub Actions before merging into `main`, with the branch up to date. A missing,
-pending, or failed check blocks merging. This server-side requirement is managed
-in GitHub's repository rules, separately from the workflow file; keep its check
-name in sync if the job is renamed. Existing pull-request and squash requirements
-remain in place, with no bypass actors.
+The `langgraph-startup` job starts the real `langgraph dev` server, waits up to 90
+seconds for readiness, and verifies that every graph in `langgraph.json` appears
+in the assistants API. This catches missing exports, empty graph modules, and
+import errors that mocked unit tests might miss. It uses placeholder credentials,
+ignores local `.env` files, and stops the server after the check. It does not
+invoke models or test PDF retrieval. Run it locally on macOS or Linux with:
+
+```sh
+uv sync --locked --dev
+uv run --no-sync python scripts/check_langgraph_startup.py
+```
+
+These checks validate the committed code in GitHub; they cannot detect empty or
+unsaved files that exist only in a developer's local checkout.
+
+The repository's `main protection` ruleset requires the `unit-tests` and
+`langgraph-startup` checks from GitHub Actions before merging into `main`, with
+the branch up to date. A missing, pending, or failed check blocks merging. This
+server-side requirement is managed in GitHub's repository rules, separately from
+the workflow file; keep the check names in sync if the jobs are renamed. Existing
+pull-request and squash requirements remain in place, with no bypass actors.
 
 ## Proposed Evaluation
 
