@@ -17,7 +17,11 @@
 - Keep the subject concise and imperative. Mark breaking changes with `!` and a `BREAKING CHANGE:` footer when applicable.
 - Use a Conventional Commit title for every pull request so it can become the final squash commit message.
 - Integrate pull requests exclusively with squash merge. Do not use merge commits or rebase merge.
+- Every squash commit on the default branch must end with its pull request reference, ` (#<number>)`, so the branch that produced it stays traceable from `git log`.
+- Never pass `--subject` or `--body` to `gh pr merge --squash`. GitHub appends ` (#<number>)` only when it builds the subject from the pull request title; an explicit subject silently drops it.
+- If the pull request title is not the message you want on the default branch, correct it with `gh pr edit --title` before merging, then merge without overriding the subject.
 - Merge only after required checks and approvals pass and all conflicts and actionable review comments are resolved.
+- After merging, verify that the new commit on the default branch carries its ` (#<number>)` suffix. Repairing a missing one means rewriting published history, which needs explicit authorization.
 
 ## Stacked pull requests
 
