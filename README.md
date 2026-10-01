@@ -66,6 +66,55 @@ You will need API keys to work with commercial LLMs. Copy [`.env.example`](./.en
 
 GIT!! Unfortunatelly out of the scope of this class, but please take a look at these [tutorials](https://help.github.com/articles/good-resources-for-learning-git-and-github/)
 
+## Agent examples: single-file and modular
+
+Both versions coexist intentionally for the course. Select `contact` or `support`
+in LangGraph Studio to compare their organization:
+
+| Graph | Entry point | Organization |
+| :---- | :---- | :---- |
+| `contact` | `src/agents/contact.py` | Original contact agent in one file, using the retrieval helpers from `rag.py`. |
+| `support` | `src/agents/support/agent.py` | Modular contact agent with separate state, nodes, instructions, and tools. |
+
+```text
+src/agents/support/
+├── agent.py                     # Graph construction and compilation
+├── state.py                     # Shared conversation and contact state
+└── nodes/
+    ├── conversation/
+    │   ├── node.py              # Model with document-search tools
+    │   ├── prompt.py            # Conversation system prompt
+    │   └── tools.py             # PDF retrieval and search_docs
+    └── extractor/
+        ├── node.py              # Contact schema and extraction
+        └── prompt.py            # Extraction system prompt
+```
+
+The modular example keeps the same flow: extraction → conversation → optional
+tools → conversation. It declares all extracted fields in its state and allows
+missing contact values (`None`). Retrieval code is duplicated intentionally so
+`support` does not import the single-file examples. Both use the same PDF and
+Chroma locations (`data/pdfs` and `data/chroma`, configurable with `RAG_DATA_DIR`
+and `RAG_CHROMA_DIR`). The `agent`, `simple`, and `rag` graphs remain available.
+
+Each node returns a partial state update through `new_state`: LangGraph preserves
+the other fields, and the `MessagesState` reducer integrates new messages into
+the history. The extractor receives its system prompt together with the history
+and uses the `ContactInfo` schema defined in its own `node.py`.
+
+Within the same checkout, `rag`, `contact`, and `support` use the same Chroma
+directory and collection (`advancedgenai-course-rag`). An existing nonempty
+collection is reused without indexing the PDFs again. A separate worktree has
+its own default `data/chroma` path; to reuse an existing database from another
+checkout, set `RAG_CHROMA_DIR` to the absolute path of that existing directory.
+
+Run the offline checks with `uv run python -m unittest discover -s tests -v`.
+They simulate model responses and retrieval, including preservation of state
+and reuse of a nonempty vector store, without making API calls.
+
+From the checkout containing these files, configure `.env` as described above and
+run `uv run langgraph dev`. The `support` graph is registered in `langgraph.json`.
+
 ## Proposed Evaluation
 
 * 50% Project
