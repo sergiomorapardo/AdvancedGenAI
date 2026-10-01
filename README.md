@@ -115,6 +115,32 @@ and reuse of a nonempty vector store, without making API calls.
 From the checkout containing these files, configure `.env` as described above and
 run `uv run langgraph dev`. The `support` graph is registered in `langgraph.json`.
 
+## Continuous integration
+
+GitHub Actions runs `.github/workflows/ci.yml` on every branch push and on pull
+requests. Each push tests its latest commit; pushing several commits together
+produces one push run. An open pull request also gets a run against GitHub's test
+merge with its target branch.
+
+The `unit-tests` job uses the Python version in `.python-version`, installs the
+dependencies from `uv.lock`, and runs the offline unit tests. It fails if a test
+fails, an import fails, or no tests are discovered. No model API keys, PDFs, or
+running Chroma service are needed.
+
+To run the tests locally:
+
+```sh
+uv sync --locked --no-dev
+uv run --no-sync python -m unittest discover -s tests -v
+```
+
+The repository's `main protection` ruleset requires the `unit-tests` check from
+GitHub Actions before merging into `main`, with the branch up to date. A missing,
+pending, or failed check blocks merging. This server-side requirement is managed
+in GitHub's repository rules, separately from the workflow file; keep its check
+name in sync if the job is renamed. Existing pull-request and squash requirements
+remain in place, with no bypass actors.
+
 ## Proposed Evaluation
 
 * 50% Project
