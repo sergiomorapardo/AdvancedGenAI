@@ -2,7 +2,6 @@ import os
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
-from urllib.request import Request, urlopen
 
 from dotenv import find_dotenv, load_dotenv
 from langchain.chat_models import init_chat_model
@@ -21,13 +20,6 @@ ROOT_DIR = Path(__file__).resolve().parents[2]
 DATA_DIR = Path(os.getenv("RAG_DATA_DIR", ROOT_DIR / "data" / "pdfs"))
 CHROMA_DIR = Path(os.getenv("RAG_CHROMA_DIR", ROOT_DIR / "data" / "chroma"))
 COLLECTION_NAME = "advancedgenai-course-rag"
-
-PDF_URLS = {
-    "informe_analisis_ventas_tienda_abc": "https://static.platzi.com/media/public/uploads/informe_analisis_ventas_tienda_abc_78f886d7-831a-496c-ac41-082a322ea23c.pdf",
-    "recetario_cocina_saludable": "https://static.platzi.com/media/public/uploads/recetario_cocina_saludable_e1e8fca6-168b-4c9c-bf47-74e8b97ea02f.pdf",
-    "guia_viaje_descubre_paris": "https://static.platzi.com/media/public/uploads/guia_viaje_descubre_paris_78441010-4be3-4f9a-80b3-7093a3acabf7.pdf",
-    "investigacion_ia_medicina": "https://static.platzi.com/media/public/uploads/investigacion_ia_medicina_a3889b2c-cb97-4b29-ac95-bd9c9d49c6b7.pdf",
-}
 
 llm = init_chat_model(
     "anthropic:claude-haiku-4-5",
@@ -66,17 +58,6 @@ class State(MessagesState):
     documents: list[Document]
 
 
-def _download_pdfs() -> None:
-    DATA_DIR.mkdir(parents=True, exist_ok=True)
-    for name, url in PDF_URLS.items():
-        destination = DATA_DIR / f"{name}.pdf"
-        if destination.exists():
-            continue
-        request = Request(url, headers={"User-Agent": "Mozilla/5.0"})
-        with urlopen(request, timeout=30) as response:
-            destination.write_bytes(response.read())
-
-
 @lru_cache(maxsize=1)
 def _get_retriever() -> Any:
     CHROMA_DIR.mkdir(parents=True, exist_ok=True)
@@ -86,7 +67,11 @@ def _get_retriever() -> Any:
         persist_directory=str(CHROMA_DIR),
     )
     if not vector_store.get(limit=1)["ids"]:
-        _download_pdfs()
+        if not DATA_DIR.exists() or not any(DATA_DIR.glob("*.pdf")):
+            raise FileNotFoundError(
+                f"No se encontraron PDFs locales en {DATA_DIR}. "
+                "Agrega al menos un archivo .pdf antes de ejecutar el RAG."
+            )
         documents = DirectoryLoader(
             str(DATA_DIR),
             glob="**/*.pdf",
