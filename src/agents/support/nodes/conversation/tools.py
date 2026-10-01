@@ -18,6 +18,7 @@ DATA_DIR = Path(os.getenv("RAG_DATA_DIR", ROOT_DIR / "data" / "pdfs"))
 CHROMA_DIR = Path(os.getenv("RAG_CHROMA_DIR", ROOT_DIR / "data" / "chroma"))
 COLLECTION_NAME = "advancedgenai-course-rag"
 
+
 @lru_cache(maxsize=1)
 def _get_retriever() -> Any:
     CHROMA_DIR.mkdir(parents=True, exist_ok=True)

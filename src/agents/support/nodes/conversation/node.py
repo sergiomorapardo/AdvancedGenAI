@@ -12,11 +12,14 @@ llm = init_chat_model("anthropic:claude-haiku-4-5", temperature=1)
 llm_with_tools = llm.bind_tools([search_docs])
 
 
-def conversation(state: State):
+def conversation(state: State) -> State:
     history = state["messages"]
     customer_name = state.get("customer_name", "John Doe")
     system_message = SystemMessage(
         content=SYSTEM_PROMPT.format(customer_name=customer_name)
     )
     ai_message = llm_with_tools.invoke([system_message, *history])
-    return {"messages": [ai_message]}
+    # MessagesState integra este mensaje con el historial existente.
+    new_state: State = {}
+    new_state["messages"] = [ai_message]
+    return new_state
