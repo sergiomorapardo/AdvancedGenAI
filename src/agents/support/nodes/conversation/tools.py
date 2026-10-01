@@ -56,6 +56,9 @@ def _format_documents(documents: list[Document]) -> str:
 
 @tool
 def search_docs(query: str) -> str:
-    """Busca información en los PDFs del curso. Úsala solo si la pregunta
-    requiere consultar esos documentos."""
+    """Consulta los PDFs disponibles, incluido un recetario de cocina saludable.
+    Úsala cuando el usuario pida recetas, ideas para comer o recomendaciones
+    de comida, incluso si solo expresa que tiene hambre.
+    También permite consultar los demás documentos disponibles.
+    """
     return _format_documents(_get_retriever().invoke(query))
