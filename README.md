@@ -66,6 +66,96 @@ You will need API keys to work with commercial LLMs. Copy [`.env.example`](./.en
 
 GIT!! Unfortunatelly out of the scope of this class, but please take a look at these [tutorials](https://help.github.com/articles/good-resources-for-learning-git-and-github/)
 
+## Agent examples: single-file and modular
+
+Both versions coexist intentionally for the course. Select `contact` or `support`
+in LangGraph Studio to compare their organization:
+
+| Graph | Entry point | Organization |
+| :---- | :---- | :---- |
+| `contact` | `src/agents/contact.py` | Original contact agent in one file, using the retrieval helpers from `rag.py`. |
+| `support` | `src/agents/support/agent.py` | Modular contact agent with separate state, nodes, instructions, and tools. |
+
+```text
+src/agents/support/
+├── agent.py                     # Graph construction and compilation
+├── state.py                     # Shared conversation and contact state
+└── nodes/
+    ├── conversation/
+    │   ├── node.py              # Model with document-search tools
+    │   ├── prompt.py            # Conversation system prompt
+    │   └── tools.py             # PDF retrieval and search_docs
+    └── extractor/
+        ├── node.py              # Contact schema and extraction
+        └── prompt.py            # Extraction system prompt
+```
+
+The modular example keeps the same flow: extraction → conversation → optional
+tools → conversation. It declares all extracted fields in its state and allows
+missing contact values (`None`). Retrieval code is duplicated intentionally so
+`support` does not import the single-file examples. Both use the same PDF and
+Chroma locations (`data/pdfs` and `data/chroma`, configurable with `RAG_DATA_DIR`
+and `RAG_CHROMA_DIR`). The `agent`, `simple`, and `rag` graphs remain available.
+
+Each node returns a partial state update through `new_state`: LangGraph preserves
+the other fields, and the `MessagesState` reducer integrates new messages into
+the history. The extractor receives its system prompt together with the history
+and uses the `ContactInfo` schema defined in its own `node.py`.
+
+Within the same checkout, `rag`, `contact`, and `support` use the same Chroma
+directory and collection (`advancedgenai-course-rag`). An existing nonempty
+collection is reused without indexing the PDFs again. A separate worktree has
+its own default `data/chroma` path; to reuse an existing database from another
+checkout, set `RAG_CHROMA_DIR` to the absolute path of that existing directory.
+
+Run the offline checks with `uv run python -m unittest discover -s tests -v`.
+They simulate model responses and retrieval, including preservation of state
+and reuse of a nonempty vector store, without making API calls.
+
+From the checkout containing these files, configure `.env` as described above and
+run `uv run langgraph dev`. The `support` graph is registered in `langgraph.json`.
+
+## Continuous integration
+
+GitHub Actions runs `.github/workflows/ci.yml` on every branch push and on pull
+requests. Each push tests its latest commit; pushing several commits together
+produces one push run. An open pull request also gets a run against GitHub's test
+merge with its target branch.
+
+The `unit-tests` job uses the Python version in `.python-version`, installs the
+dependencies from `uv.lock`, and runs the offline unit tests. It fails if a test
+fails, an import fails, or no tests are discovered. No model API keys, PDFs, or
+running Chroma service are needed.
+
+To run the tests locally:
+
+```sh
+uv sync --locked --no-dev
+uv run --no-sync python -m unittest discover -s tests -v
+```
+
+The `langgraph-startup` job starts the real `langgraph dev` server, waits up to 90
+seconds for readiness, and verifies that every graph in `langgraph.json` appears
+in the assistants API. This catches missing exports, empty graph modules, and
+import errors that mocked unit tests might miss. It uses placeholder credentials,
+ignores local `.env` files, and stops the server after the check. It does not
+invoke models or test PDF retrieval. Run it locally on macOS or Linux with:
+
+```sh
+uv sync --locked --dev
+uv run --no-sync python scripts/check_langgraph_startup.py
+```
+
+These checks validate the committed code in GitHub; they cannot detect empty or
+unsaved files that exist only in a developer's local checkout.
+
+The repository's `main protection` ruleset requires the `unit-tests` and
+`langgraph-startup` checks from GitHub Actions before merging into `main`, with
+the branch up to date. A missing, pending, or failed check blocks merging. This
+server-side requirement is managed in GitHub's repository rules, separately from
+the workflow file; keep the check names in sync if the jobs are renamed. Existing
+pull-request and squash requirements remain in place, with no bypass actors.
+
 ## Proposed Evaluation
 
 * 50% Project

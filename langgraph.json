@@ -4,7 +4,8 @@
         "agent": "./src/agents/main.py:agent",
         "simple": "./src/agents/simple.py:agent",
         "rag": "./src/agents/rag.py:agent",
-        "contact": "./src/agents/contact.py:agent"
+        "contact": "./src/agents/contact.py:agent",
+        "support": "./src/agents/support/agent.py:agent"
 
     },
     "env": ".env"
