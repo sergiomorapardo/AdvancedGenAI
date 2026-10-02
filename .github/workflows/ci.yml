@@ -16,6 +16,11 @@ concurrency:
   group: ci-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
+defaults:
+  run:
+    # Preserve tool failures through tee in advisory report steps.
+    shell: bash
+
 jobs:
   unit-tests:
     name: unit-tests
