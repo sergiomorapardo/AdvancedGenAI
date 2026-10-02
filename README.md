@@ -143,7 +143,7 @@ invoke models or test PDF retrieval. Run it locally on macOS or Linux with:
 
 ```sh
 uv sync --locked --dev
-uv run --no-sync python scripts/check_langgraph_startup.py
+uv run --no-sync python .github/scripts/check_langgraph_startup.py
 ```
 
 These checks validate the committed code in GitHub; they cannot detect empty or
