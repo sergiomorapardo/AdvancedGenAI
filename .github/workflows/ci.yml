@@ -83,8 +83,6 @@ jobs:
     name: quality
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    env:
-      PRE_COMMIT_HOME: ${{ runner.temp }}/pre-commit
     steps:
       - name: Check out code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -104,6 +102,8 @@ jobs:
         run: uv sync --locked --only-group quality
 
       - name: Run read-only hooks
+        env:
+          PRE_COMMIT_HOME: ${{ runner.temp }}/pre-commit
         run: uv run --no-sync pre-commit run --all-files --show-diff-on-failure
 
       - name: Check Python security (medium and high severity)
