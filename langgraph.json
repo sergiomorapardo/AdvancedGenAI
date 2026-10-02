@@ -5,7 +5,9 @@
         "simple": "./src/agents/simple.py:agent",
         "rag": "./src/agents/rag.py:agent",
         "contact": "./src/agents/contact.py:agent",
-        "support": "./src/agents/support/agent.py:agent"
+        "support": "./src/agents/support/agent.py:agent",
+        "react": "./src/agents/support/ReAct.py:react_node"
+
 
     },
     "env": ".env"
