@@ -128,7 +128,7 @@ jobs:
             coverage-reports/summary.md
             coverage-reports/html/
           if-no-files-found: warn
-          retention-days: 14
+          retention-days: 1
 
   coverage:
     name: coverage (${{ needs.unit-tests.outputs.coverage || 'unavailable' }})
@@ -268,4 +268,4 @@ jobs:
           name: quality-reports
           path: quality-reports/
           if-no-files-found: warn
-          retention-days: 14
+          retention-days: 1
