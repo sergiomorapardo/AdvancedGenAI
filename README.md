@@ -168,7 +168,7 @@ The existing required `unit-tests` check keeps its name.
 
 Open the coverage check for a per-file summary. Download the `coverage-report`
 artifact from the workflow run and open `html/index.html` for uncovered lines
-and branches. JSON, Markdown and HTML reports are retained for 14 days. The
+and branches. JSON, Markdown and HTML reports are retained for 1 day (24 hours). The
 percentage combines statements and branches; tests, notebooks and CI scripts
 are outside its scope. Coverage measures execution, not the quality of test
 assertions. There is no minimum coverage threshold yet; test failures still
@@ -218,7 +218,7 @@ hooks automatically. CI runs the checks regardless of local hook installation.
 Full Ruff lint (`E4,E7,E9,F,I`), format checking, mypy and `pip-audit` are
 **temporarily advisory** while the existing findings are addressed in the cleaning
 PR. Their exit statuses and dependency vulnerabilities appear in the Actions
-summary; the `quality-reports` artifact retains detailed reports for 14 days.
+summary; the `quality-reports` artifact retains detailed reports for 1 day (24 hours).
 A successful `quality` job does not mean these advisory checks passed. Required
 checks remain `unit-tests` and `langgraph-startup`; the new quality job is not
 added to the GitHub ruleset by this PR.
