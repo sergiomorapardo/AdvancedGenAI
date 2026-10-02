@@ -117,13 +117,15 @@ run `uv run langgraph dev`. The `support` graph is registered in `langgraph.json
 
 ## Continuous integration
 
-GitHub Actions runs `.github/workflows/ci.yml` on every branch push and on pull
-requests. Each push tests its latest commit; pushing several commits together
-produces one push run. An open pull request also gets a run against GitHub's test
-merge with its target branch.
+GitHub Actions runs `.github/workflows/ci.yml` on pull requests and pushes to
+`main`. A PR tests GitHub's temporary merge with its target branch; the `main`
+run verifies the integrated commit. This avoids duplicate push/PR runs on feature
+branches. New PR runs cancel older runs for that PR. The workflow also runs
+weekly on Tuesday at 09:00 America/Bogota and supports manual dispatch.
 
 The `unit-tests` job uses the Python version in `.python-version`, installs the
-dependencies from `uv.lock`, and runs the offline unit tests. It fails if a test
+dependencies and quality tools from `uv.lock`, and runs the offline unit tests
+under coverage.py. It fails if a test
 fails, an import fails, or no tests are discovered. No model API keys, PDFs, or
 running Chroma service are needed.
 
@@ -143,7 +145,7 @@ invoke models or test PDF retrieval. Run it locally on macOS or Linux with:
 
 ```sh
 uv sync --locked --dev
-uv run --no-sync python scripts/check_langgraph_startup.py
+uv run --no-sync python .github/scripts/check_langgraph_startup.py
 ```
 
 These checks validate the committed code in GitHub; they cannot detect empty or
@@ -155,6 +157,91 @@ the branch up to date. A missing, pending, or failed check blocks merging. This
 server-side requirement is managed in GitHub's repository rules, separately from
 the workflow file; keep the check names in sync if the jobs are renamed. Existing
 pull-request and squash requirements remain in place, with no bypass actors.
+
+### Unit test coverage in pull requests
+
+The same `unit-tests` execution measures statements and branches across all
+Python code under `src/`, including files not exercised by the tests. A separate
+lightweight job named `coverage (XX.X%)` displays the total directly in the PR's
+checks list, without rerunning tests or using an external reporting service.
+The existing required `unit-tests` check keeps its name.
+
+Open the coverage check for a per-file summary. Download the `coverage-report`
+artifact from the workflow run and open `html/index.html` for uncovered lines
+and branches. JSON, Markdown and HTML reports are retained for 1 day (24 hours). The
+percentage combines statements and branches; tests, notebooks and CI scripts
+are outside its scope. Coverage measures execution, not the quality of test
+assertions. There is no minimum coverage threshold yet; test failures still
+fail the required test job.
+
+Run the tests with coverage locally:
+
+```sh
+uv sync --locked --no-dev --group quality
+uv run --no-sync coverage run -m unittest discover -s tests -v
+uv run --no-sync coverage report
+uv run --no-sync coverage html
+```
+
+CI also rejects suites with no discovered tests. Generated reports are ignored
+by Git; agents, notebooks and test implementations are not rewritten to collect
+coverage.
+
+### Quality checks and local hooks
+
+The `quality` job installs tools from the separate `quality` dependency group,
+runs read-only pre-commit hooks, scans Python with Bandit (medium/high severity),
+and builds both a wheel and source distribution with `uv build`. The hooks check
+fatal Python errors, JSON/notebook syntax, YAML, TOML, merge markers and private
+keys. They do not rewrite files or execute notebooks. GitHub secret scanning and
+push protection complement private-key detection for supported API credentials.
+
+Install tools and run the same hooks locally:
+
+```sh
+uv sync --locked --only-group quality
+uv run --no-sync pre-commit run --all-files
+```
+
+Once your checkout contains `.pre-commit-config.yaml`, opt in to running hooks
+on each commit:
+
+```sh
+uv run --only-group quality pre-commit install
+```
+
+Installing hooks changes local Git configuration, outside the PR. Git worktrees
+share the hooks directory, so install only after your active checkouts contain
+the configuration. The PR adds the configuration without changing shared local
+hooks automatically. CI runs the checks regardless of local hook installation.
+
+Full Ruff lint (`E4,E7,E9,F,I`), format checking, mypy and `pip-audit` are
+**temporarily advisory** while the existing findings are addressed in the cleaning
+PR. Their exit statuses and dependency vulnerabilities appear in the Actions
+summary; the `quality-reports` artifact retains detailed reports for 1 day (24 hours).
+A successful `quality` job does not mean these advisory checks passed. Required
+checks remain `unit-tests` and `langgraph-startup`; the new quality job is not
+added to the GitHub ruleset by this PR.
+
+Run the advisory code checks without applying fixes:
+
+```sh
+uv run --only-group quality pre-commit run ruff-full --all-files --hook-stage manual
+uv run --only-group quality pre-commit run ruff-format --all-files --hook-stage manual
+uv run --only-group quality pre-commit run mypy --hook-stage manual
+```
+
+Mypy initially ignores unavailable third-party stubs and skips imported-module
+analysis; it still checks assignments and annotations in our source. Expand type
+coverage after fixing the reported errors. Ruff starts with fatal checks only;
+enable full lint and format gates after cleaning. No blanket vulnerability
+exemptions are configured.
+
+Dependabot proposes weekly updates for `uv.lock`/`pyproject.toml` and pinned
+GitHub Actions, using Conventional Commit titles with Gitmoji. Security updates
+are enabled separately in repository settings. PRs require review and checks;
+updates are not merged automatically. See [dependency maintenance](docs/dependency-maintenance.md)
+for the sunset review, security baseline and transition to blocking checks.
 
 ## Proposed Evaluation
 

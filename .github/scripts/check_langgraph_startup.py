@@ -14,7 +14,7 @@ from urllib.error import URLError
 from urllib.request import ProxyHandler, Request, build_opener
 
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 
 
 def check_startup(config_path: Path, timeout: float) -> None:
