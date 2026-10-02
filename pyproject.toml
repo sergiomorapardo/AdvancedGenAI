@@ -27,6 +27,7 @@ dependencies = [
     "pandas>=3.0.5",
     "python-dotenv>=1.2.3",
     "jupyter",
+    "jinja2>=3.1.6",
 ]
 
 [dependency-groups]
