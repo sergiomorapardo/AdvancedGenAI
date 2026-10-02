@@ -38,6 +38,14 @@ dev = [
     "langgraph-api>=0.11.0",
     "grandalf>=0.8",
 ]
+quality = [
+    "bandit>=1.9.4",
+    "mypy>=2.4.0",
+    "pip-audit>=2.10.1",
+    "pre-commit>=4.6.2",
+    "pre-commit-hooks>=6.0.0",
+    "ruff>=0.16.10",
+]
 
 [tool.uv.build-backend]
 # La distribución se llama advancedgenai; los módulos importables son `agents` y `api`
@@ -46,3 +54,18 @@ module-name = ["agents", "api"]
 [build-system]
 requires = ["uv_build>=0.12.10,<0.13.0"]
 build-backend = "uv_build"
+
+[tool.ruff]
+target-version = "py312"
+line-length = 88
+
+[tool.ruff.lint]
+# Fatal errors first; enable E4/E7/F/I after the cleaning PR.
+select = ["E9", "F63", "F7", "F82"]
+
+[tool.mypy]
+python_version = "3.12"
+files = ["src", ".github/scripts"]
+ignore_missing_imports = true
+follow_imports = "skip"
+explicit_package_bases = true

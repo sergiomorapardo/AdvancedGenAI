@@ -64,3 +64,8 @@ Thumbs.db
 
 # LangGraph dev (servidor local in-memory)
 .langgraph_api/
+
+# Quality tools and CI reports
+.mypy_cache/
+.ruff_cache/
+quality-reports/
