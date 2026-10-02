@@ -24,6 +24,9 @@ defaults:
 jobs:
   unit-tests:
     name: unit-tests
+    outputs:
+      coverage: ${{ steps.coverage.outputs.percent }}
+      coverage-report: ${{ steps.coverage.outputs.report }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -44,20 +47,99 @@ jobs:
       - name: Install Python from .python-version
         run: uv python install
 
-      - name: Install locked dependencies
-        run: uv sync --locked --no-dev
+      - name: Install locked dependencies and quality tools
+        run: uv sync --locked --no-dev --group quality
 
       - name: Run unit tests
         run: |
           uv run --no-sync python - <<'PY'
           import unittest
+          from coverage import Coverage
 
-          suite = unittest.defaultTestLoader.discover("tests")
-          if suite.countTestCases() == 0:
-              raise SystemExit("No unit tests were discovered.")
-          result = unittest.TextTestRunner(verbosity=2).run(suite)
-          raise SystemExit(0 if result.wasSuccessful() else 1)
+          measurement = Coverage()
+          measurement.start()
+          try:
+              suite = unittest.defaultTestLoader.discover("tests")
+              if suite.countTestCases() == 0:
+                  raise SystemExit("No unit tests were discovered.")
+              result = unittest.TextTestRunner(verbosity=2).run(suite)
+              raise SystemExit(0 if result.wasSuccessful() else 1)
+          finally:
+              measurement.stop()
+              measurement.save()
           PY
+
+      - name: Generate coverage reports
+        id: coverage
+        if: always()
+        run: |
+          uv run --no-sync coverage report
+          uv run --no-sync coverage json
+          uv run --no-sync coverage html
+          uv run --no-sync python - <<'PY'
+          import json
+          import os
+          import uuid
+          from pathlib import Path
+
+          data = json.loads(Path("coverage-reports/coverage.json").read_text())
+          totals = data["totals"]
+          percent = f"{totals['percent_covered']:.1f}%"
+          lines = [
+              f"## Unit test coverage: {percent}",
+              "",
+              "Measures statements and branches across all Python source in `src/`, including untested modules.",
+              "No minimum threshold is enforced yet. Notebooks and test code are outside this metric.",
+              "",
+              "| File | Statements covered / total | Branches covered / total | Coverage |",
+              "| --- | --- | --- | --- |",
+          ]
+          for filename, details in sorted(data["files"].items()):
+              summary = details["summary"]
+              if not summary["num_statements"]:
+                  continue
+              lines.append(
+                  f"| `{filename}` | {summary['covered_lines']} / {summary['num_statements']} "
+                  f"| {summary['covered_branches']} / {summary['num_branches']} "
+                  f"| {summary['percent_covered']:.1f}% |"
+              )
+          lines += [
+              f"| **Total** | **{totals['covered_lines']} / {totals['num_statements']}** "
+              f"| **{totals['covered_branches']} / {totals['num_branches']}** | **{percent}** |",
+              "",
+              "Download the `coverage-report` artifact from this workflow run and open `html/index.html` for uncovered lines and branches.",
+          ]
+          report = "\n".join(lines) + "\n"
+          Path("coverage-reports/summary.md").write_text(report)
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as summary_file:
+              summary_file.write(report)
+          delimiter = uuid.uuid4().hex
+          with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+              output.write(f"percent={percent}\nreport<<{delimiter}\n{report}{delimiter}\n")
+          PY
+
+      - name: Upload coverage reports
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: coverage-report
+          path: |
+            coverage-reports/coverage.json
+            coverage-reports/summary.md
+            coverage-reports/html/
+          if-no-files-found: warn
+          retention-days: 14
+
+  coverage:
+    name: coverage (${{ needs.unit-tests.outputs.coverage || 'unavailable' }})
+    needs: unit-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Publish coverage in the PR check
+        env:
+          COVERAGE_REPORT: ${{ needs.unit-tests.outputs.coverage-report }}
+        run: printf '%s\n' "$COVERAGE_REPORT" >> "$GITHUB_STEP_SUMMARY"
 
   langgraph-startup:
     name: langgraph-startup
