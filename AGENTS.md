@@ -13,6 +13,11 @@
 ## Commits and pull requests
 
 - Use Conventional Commits for every commit: `<type>(<optional-scope>): <description>`.
+- Plan commits by logical change group before staging files. Give each independently reviewable group its own focused commit; never bundle unrelated groups into one commit.
+- When a PR contains multiple logical groups, keep separate commits for those groups, including implementation, dependency/configuration changes, tests, and documentation when independently reviewable.
+- Stage explicit paths or hunks for each group rather than staging all pending changes indiscriminately.
+- Preserve the separate commits on the PR branch; do not squash them before review. The final PR integration still uses squash merge, producing one commit on the default branch.
+- Apply this grouping to new commits without rewriting already published history unless explicitly authorized.
 - Prefer these types: `feat`, `fix`, `refactor`, `perf`, `docs`, `test`, `build`, `ci`, `chore`, and `revert`.
 - Keep the subject concise and imperative. Mark breaking changes with `!` and a `BREAKING CHANGE:` footer when applicable.
 - Use a Conventional Commit title for every pull request so it can become the final squash commit message.
