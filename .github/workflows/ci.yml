@@ -2,11 +2,19 @@ name: CI
 
 on:
   push:
-    branches: ["**"]
+    branches: ["main"]
   pull_request:
+  workflow_dispatch:
+  schedule:
+    # Weekly dependency/security reports, Tuesday 09:00 America/Bogota.
+    - cron: "0 14 * * 2"
 
 permissions:
   contents: read
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   unit-tests:
@@ -70,3 +78,107 @@ jobs:
 
       - name: Check LangGraph startup and registered graphs
         run: uv run --no-sync python .github/scripts/check_langgraph_startup.py
+
+  quality:
+    name: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PRE_COMMIT_HOME: ${{ runner.temp }}/pre-commit
+    steps:
+      - name: Check out code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          version: "0.12.10"
+          enable-cache: true
+
+      - name: Install Python from .python-version
+        run: uv python install
+
+      - name: Install locked quality tools
+        run: uv sync --locked --only-group quality
+
+      - name: Run read-only hooks
+        run: uv run --no-sync pre-commit run --all-files --show-diff-on-failure
+
+      - name: Check Python security (medium and high severity)
+        run: uv run --no-sync bandit -r src .github/scripts -ll
+
+      - name: Build wheel and source distribution
+        run: uv build
+
+      - name: Prepare reports directory
+        run: mkdir -p quality-reports
+
+      # Transitional reports: enable blocking checks after the cleaning PR.
+      - name: Report full lint debt
+        id: lint
+        continue-on-error: true
+        run: uv run --no-sync ruff check --select E4,E7,E9,F,I src tests .github/scripts 2>&1 | tee quality-reports/lint.txt
+
+      - name: Report formatting debt
+        id: format
+        continue-on-error: true
+        run: uv run --no-sync ruff format --check src tests .github/scripts 2>&1 | tee quality-reports/format.txt
+
+      - name: Report type checking debt
+        id: types
+        continue-on-error: true
+        run: uv run --no-sync mypy 2>&1 | tee quality-reports/types.txt
+
+      - name: Export locked dependencies for audit
+        run: uv export --locked --all-groups --no-emit-project --format requirements-txt --output-file quality-reports/requirements.txt > /dev/null
+
+      - name: Report dependency vulnerabilities (temporarily advisory)
+        id: audit
+        continue-on-error: true
+        run: >-
+          uv run --no-sync pip-audit --require-hashes --no-deps --disable-pip
+          --strict -r quality-reports/requirements.txt --format markdown
+          --output quality-reports/audit.md --progress-spinner off
+
+      - name: Report available dependency updates
+        run: uv tree --locked --outdated --depth 1 > quality-reports/outdated.txt
+
+      - name: Publish report status
+        if: always()
+        env:
+          LINT_OUTCOME: ${{ steps.lint.outcome }}
+          FORMAT_OUTCOME: ${{ steps.format.outcome }}
+          TYPES_OUTCOME: ${{ steps.types.outcome }}
+          AUDIT_OUTCOME: ${{ steps.audit.outcome }}
+        run: |
+          {
+            echo '## Quality and dependency reports'
+            echo 'Advisory checks are temporary until the cleaning PR resolves the existing findings.'
+            echo
+            echo '| Check | Outcome |'
+            echo '| --- | --- |'
+            echo "| Full lint | $LINT_OUTCOME |"
+            echo "| Format | $FORMAT_OUTCOME |"
+            echo "| Types | $TYPES_OUTCOME |"
+            echo "| Dependency audit | $AUDIT_OUTCOME |"
+            echo
+            if [ -f quality-reports/audit.md ]; then
+              cat quality-reports/audit.md
+            fi
+            echo
+            echo 'Download quality-reports for lint, format, types, audit and available updates.'
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [ "$AUDIT_OUTCOME" = failure ]; then
+            echo '::warning::Dependency audit failed. Review the summary and artifact; this check is temporarily advisory.'
+          fi
+
+      - name: Upload quality reports
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: quality-reports
+          path: quality-reports/
+          if-no-files-found: warn
+          retention-days: 14
