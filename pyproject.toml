@@ -40,6 +40,7 @@ dev = [
 ]
 quality = [
     "bandit>=1.9.4",
+    "coverage>=7.16.2",
     "mypy>=2.4.0",
     "pip-audit>=2.10.1",
     "pre-commit>=4.6.2",
@@ -69,3 +70,21 @@ files = ["src", ".github/scripts"]
 ignore_missing_imports = true
 follow_imports = "skip"
 explicit_package_bases = true
+
+[tool.coverage.run]
+source = ["src"]
+branch = true
+relative_files = true
+data_file = "coverage-reports/.coverage"
+
+[tool.coverage.report]
+show_missing = true
+precision = 1
+include_namespace_packages = true
+skip_empty = true
+
+[tool.coverage.html]
+directory = "coverage-reports/html"
+
+[tool.coverage.json]
+output = "coverage-reports/coverage.json"
