@@ -124,7 +124,8 @@ branches. New PR runs cancel older runs for that PR. The workflow also runs
 weekly on Tuesday at 09:00 America/Bogota and supports manual dispatch.
 
 The `unit-tests` job uses the Python version in `.python-version`, installs the
-dependencies from `uv.lock`, and runs the offline unit tests. It fails if a test
+dependencies and quality tools from `uv.lock`, and runs the offline unit tests
+under coverage.py. It fails if a test
 fails, an import fails, or no tests are discovered. No model API keys, PDFs, or
 running Chroma service are needed.
 
@@ -156,6 +157,35 @@ the branch up to date. A missing, pending, or failed check blocks merging. This
 server-side requirement is managed in GitHub's repository rules, separately from
 the workflow file; keep the check names in sync if the jobs are renamed. Existing
 pull-request and squash requirements remain in place, with no bypass actors.
+
+### Unit test coverage in pull requests
+
+The same `unit-tests` execution measures statements and branches across all
+Python code under `src/`, including files not exercised by the tests. A separate
+lightweight job named `coverage (XX.X%)` displays the total directly in the PR's
+checks list, without rerunning tests or using an external reporting service.
+The existing required `unit-tests` check keeps its name.
+
+Open the coverage check for a per-file summary. Download the `coverage-report`
+artifact from the workflow run and open `html/index.html` for uncovered lines
+and branches. JSON, Markdown and HTML reports are retained for 14 days. The
+percentage combines statements and branches; tests, notebooks and CI scripts
+are outside its scope. Coverage measures execution, not the quality of test
+assertions. There is no minimum coverage threshold yet; test failures still
+fail the required test job.
+
+Run the tests with coverage locally:
+
+```sh
+uv sync --locked --no-dev --group quality
+uv run --no-sync coverage run -m unittest discover -s tests -v
+uv run --no-sync coverage report
+uv run --no-sync coverage html
+```
+
+CI also rejects suites with no discovered tests. Generated reports are ignored
+by Git; agents, notebooks and test implementations are not rewritten to collect
+coverage.
 
 ### Quality checks and local hooks
 
