@@ -21,6 +21,7 @@
 - Prefer these types: `feat`, `fix`, `refactor`, `perf`, `docs`, `test`, `build`, `ci`, `chore`, and `revert`.
 - Keep the subject concise and imperative. Mark breaking changes with `!` and a `BREAKING CHANGE:` footer when applicable.
 - Use a Conventional Commit title for every pull request so it can become the final squash commit message.
+- Always read and complete `.github/PULL_REQUEST_TEMPLATE.md` when creating or updating a pull request. Preserve its structure, fill applicable sections with accurate change and validation details, and remove optional sections only as the template permits. When using GitHub CLI, write the completed description to a file and pass it with `--body-file`; never replace the template with a free-form description.
 - Include one relevant Gitmoji from the [official catalog](https://gitmoji.dev/) in every new commit subject and PR title, after the Conventional Commit prefix: `<type>(<optional-scope>): <gitmoji> <description>`. For example, `chore(workflow): 🔧 organize CI and PR conventions`. Keep the prefix intact so commits remain compatible with Conventional Commits.
 - Integrate pull requests exclusively with squash merge. Do not use merge commits or rebase merge.
 - Every squash commit on the default branch must end with its pull request reference, ` (#<number>)`, so the branch that produced it stays traceable from `git log`.
