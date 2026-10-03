@@ -128,7 +128,7 @@ class SupportChecks(unittest.TestCase):
 
     def test_registration_and_independence(self):
         graphs = json.loads((root / 'langgraph.json').read_text())['graphs']
-        self.assertEqual(set(graphs), {'agent', 'simple', 'rag', 'contact', 'support', 'react', 'booking', 'code_review', 'orchestrator'})
+        self.assertEqual(set(graphs), {'agent', 'simple', 'rag', 'contact', 'support', 'react', 'booking', 'code_review', 'orchestrator', 'evaluator'})
         self.assertEqual(graphs['support'], './src/agents/support/agent.py:agent')
         self.assertNotIn('agents.contact', sys.modules)
         self.assertNotIn('agents.rag', sys.modules)
