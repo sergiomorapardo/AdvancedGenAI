@@ -18,7 +18,7 @@ class Feedback(BaseModel):
         description="If the joke is not funny, provide feedback on how to improve it.",
     )
 
-llm = init_chat_model("openai:gpt-4.1-mini", temperature=0)
+llm = init_chat_model("anthropic:claude-haiku-4-5", temperature=0)
 ll_evaluator = llm.with_structured_output(Feedback, temperature=0)
 
 
