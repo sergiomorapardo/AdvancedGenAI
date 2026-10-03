@@ -13,15 +13,25 @@ sys.path.insert(0, str(root / 'src'))
 
 from langchain_core.documents import Document
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, ToolMessage
+from langchain_core.runnables import RunnableLambda
 
-with patch('dotenv.load_dotenv'), patch('langchain.chat_models.init_chat_model'):
+booking_node = Mock()
+with patch('dotenv.load_dotenv'), patch('langchain.chat_models.init_chat_model'), patch('langchain.agents.create_agent', return_value=RunnableLambda(booking_node)):
     graph_module = importlib.import_module('agents.support.agent')
     conversation = importlib.import_module('agents.support.nodes.conversation.node')
     extractor = importlib.import_module('agents.support.nodes.extractor.node')
     tools = importlib.import_module('agents.support.nodes.conversation.tools')
+    intent = importlib.import_module('agents.support.routes.intent.route')
 
 
 class SupportChecks(unittest.TestCase):
+    def setUp(self):
+        router = patch.object(intent, 'llm')
+        self.route_model = router.start()
+        self.addCleanup(router.stop)
+        self.route_model.invoke.return_value = intent.RouteIntent(step='conversation')
+        booking_node.reset_mock()
+
     def test_contact_fields_survive_graph(self):
         contact = extractor.ContactInfo(name='Ana', email='ana@example.com', phone='123', age=30)
         with patch.object(extractor, 'llm_with_structured_output') as model, patch.object(conversation, 'llm_with_tools') as chat:
@@ -32,6 +42,8 @@ class SupportChecks(unittest.TestCase):
         self.assertEqual(result['customer_name'], 'Ana')
         self.assertEqual(len(result['messages']), 2)
         self.assertIn('Ana', chat.invoke.call_args.args[0][0].content)
+        self.route_model.invoke.assert_called_once()
+        booking_node.assert_not_called()
 
     def test_tool_round_trip(self):
         responses = [
@@ -49,6 +61,49 @@ class SupportChecks(unittest.TestCase):
         self.assertIsInstance(result['messages'][-2], ToolMessage)
         self.assertEqual(result['messages'][-2].content, '[course.pdf p.2]\nRAG info')
         self.assertEqual(result['messages'][-1].content, 'Respuesta con fuente')
+        self.route_model.invoke.assert_called_once()
+        booking_node.assert_not_called()
+
+    def test_booking_route_preserves_contact_and_skips_conversation(self):
+        self.route_model.invoke.return_value = intent.RouteIntent(step='booking')
+        history = [HumanMessage(content='Quiero agendar una cita')]
+        response = AIMessage(content='¿Con qué doctor deseas la cita?')
+        booking_node.return_value = {'messages': [response]}
+        state = {'messages': history, 'customer_name': 'Ana', 'email': 'ana@example.com'}
+        with patch.object(extractor, 'llm_with_structured_output') as extract, patch.object(conversation, 'llm_with_tools') as chat, patch.object(tools, '_get_retriever') as retrieve:
+            result = graph_module.agent.invoke(state)
+        self.route_model.invoke.assert_called_once()
+        booking_node.assert_called_once()
+        self.assertEqual(booking_node.call_args.args[0]['customer_name'], 'Ana')
+        self.assertEqual(booking_node.call_args.args[0]['email'], 'ana@example.com')
+        self.assertEqual(result['messages'], [*history, response])
+        self.assertEqual(result['customer_name'], 'Ana')
+        self.assertEqual(result['email'], 'ana@example.com')
+        extract.invoke.assert_not_called()
+        chat.invoke.assert_not_called()
+        retrieve.assert_not_called()
+        self.assertEqual(state['messages'], history)
+
+    def test_intent_routes_use_system_prompt_and_preserve_history(self):
+        history = [HumanMessage(content='Hola')]
+        state = {'messages': history}
+        for step in ('conversation', 'booking'):
+            with self.subTest(step=step):
+                self.route_model.reset_mock()
+                self.route_model.invoke.return_value = intent.RouteIntent(step=step)
+                self.assertEqual(intent.route_intent(state), step)
+                self.route_model.invoke.assert_called_once()
+                sent = self.route_model.invoke.call_args.args[0]
+                self.assertIsInstance(sent[0], SystemMessage)
+                self.assertEqual(sent[0].content, intent.SYSTEM_PROMPT)
+                self.assertEqual(sent[1:], history)
+                self.assertEqual(state, {'messages': history})
+                self.assertEqual(len(history), 1)
+
+    def test_intent_rejects_unknown_destination(self):
+        self.route_model.invoke.return_value = Mock(step='unknown')
+        with self.assertRaisesRegex(ValueError, 'Invalid step: unknown'):
+            intent.route_intent({'messages': [HumanMessage(content='Hola')]})
 
     def test_extraction_threshold(self):
         with patch.object(extractor, 'llm_with_structured_output') as model:
