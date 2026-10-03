@@ -11,7 +11,8 @@
         "react": "./src/agents/ReAct.py:react_node",
         "booking": "./src/agents/support/nodes/booking/node.py:booking",
         "code_review": "./src/agents/code_review.py:agent",
-        "orchestrator": "./src/agents/orchestrator.py:agent"
+        "orchestrator": "./src/agents/orchestrator.py:agent",
+        "evaluator": "./src/agents/evaluator.py:agent"
     },
     "env": ".env"
 }
