@@ -7,7 +7,7 @@
         "simple": "./src/agents/simple.py:agent",
         "rag": "./src/agents/rag.py:agent",
         "contact": "./src/agents/contact.py:agent",
-        "support": "./src/agents/support/agent.py:agent",
+        "support": "./src/agents/support/agent.py:make_graph",
         "react": "./src/agents/ReAct.py:react_node",
         "booking": "./src/agents/support/nodes/booking/node.py:booking",
         "code_review": "./src/agents/code_review.py:agent",
