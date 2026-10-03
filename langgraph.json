@@ -7,7 +7,8 @@
         "contact": "./src/agents/contact.py:agent",
         "support": "./src/agents/support/agent.py:agent",
         "react": "./src/agents/support/ReAct.py:react_node",
-        "booking": "./src/agents/support/nodes/booking/node.py:booking"
+        "booking": "./src/agents/support/nodes/booking/node.py:booking",
+        "code_review": "./src/agents/support/code_review.py:agent"
 
 
     },
