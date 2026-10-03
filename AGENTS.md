@@ -2,7 +2,7 @@
 
 ## Git workflow
 
-- Perform every task that may modify tracked files in a dedicated, isolated Git worktree. Never edit the primary checkout directly.
+- Perform every task that may modify tracked files in an isolated Git worktree. If the current working directory is already a worktree, reuse it; creating a new worktree for each task is not necessary. Check its branch and status before editing, and preserve unrelated user changes. Never edit the primary checkout directly; create an isolated worktree when working from the primary checkout.
 - If an isolated worktree cannot be created or used, stop and explain the blocker instead of falling back to the primary checkout.
 - Worktrees are sibling working directories attached to the same repository; never create a worktree inside another worktree.
 - Create every new branch as `feature/<name>`, where `<name>` is a short, descriptive, lowercase kebab-case slug.
