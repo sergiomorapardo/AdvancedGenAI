@@ -17,7 +17,7 @@ sys.path.insert(0, str(root / 'src'))
 
 # Import the tools without loading credentials or constructing a real model.
 with patch('dotenv.load_dotenv'), patch('langchain.agents.create_agent'):
-    react = importlib.import_module('agents.support.ReAct')
+    react = importlib.import_module('agents.ReAct')
 
 
 class ToolCallingModel(FakeMessagesListChatModel):
