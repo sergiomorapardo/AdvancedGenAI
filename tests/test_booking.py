@@ -38,7 +38,7 @@ def load_booking_agent(responses):
     module = importlib.util.module_from_spec(spec)
     with patch('dotenv.load_dotenv'), patch('langchain.agents.create_agent', side_effect=create_test_agent):
         spec.loader.exec_module(module)
-    return module.booking_node, {tool.name: tool for tool in module.tools}
+    return module.booking, {tool.name: tool for tool in module.tools}
 
 
 class BookingChecks(unittest.TestCase):
