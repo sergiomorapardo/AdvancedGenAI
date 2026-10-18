@@ -1,0 +1,29 @@
+version: 2
+updates:
+  - package-ecosystem: "uv"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Bogota"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps): ⬆️ "
+      prefix-development: "chore(deps-dev): ⬆️ "
+    groups:
+      langchain-patch-minor:
+        patterns: ["langchain*", "langgraph*", "langsmith"]
+        update-types: ["patch", "minor"]
+      quality-patch-minor:
+        patterns: ["ruff", "mypy", "pre-commit*", "pip-audit", "bandit"]
+        update-types: ["patch", "minor"]
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Bogota"
+    commit-message:
+      prefix: "ci(deps): ⬆️ "
