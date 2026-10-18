@@ -1,0 +1,52 @@
+# Tools come from uv.lock; hooks check files without rewriting them.
+repos:
+  - repo: local
+    hooks:
+      - id: ruff
+        name: Ruff fatal errors
+        entry: uv run --locked --only-group quality ruff check
+        language: system
+        types: [python]
+      - id: check-json
+        name: Check JSON and notebook syntax
+        entry: uv run --locked --only-group quality check-json
+        language: system
+        files: \.(json|ipynb)$
+      - id: check-yaml
+        name: Check YAML syntax
+        entry: uv run --locked --only-group quality check-yaml
+        language: system
+        types: [yaml]
+      - id: check-toml
+        name: Check TOML syntax
+        entry: uv run --locked --only-group quality check-toml
+        language: system
+        types: [toml]
+      - id: check-merge-conflict
+        name: Detect merge conflict markers
+        entry: uv run --locked --only-group quality check-merge-conflict
+        language: system
+        types: [text]
+      - id: detect-private-key
+        name: Detect private keys
+        entry: uv run --locked --only-group quality detect-private-key
+        language: system
+        types: [text]
+      - id: ruff-full
+        name: Ruff full lint (cleaning report)
+        entry: uv run --locked --only-group quality ruff check --select E4,E7,E9,F,I
+        language: system
+        types: [python]
+        stages: [manual]
+      - id: ruff-format
+        name: Ruff format (cleaning report)
+        entry: uv run --locked --only-group quality ruff format --check
+        language: system
+        types: [python]
+        stages: [manual]
+      - id: mypy
+        name: Mypy (cleaning report)
+        entry: uv run --locked --only-group quality mypy
+        language: system
+        pass_filenames: false
+        stages: [manual]
