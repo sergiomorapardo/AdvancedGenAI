@@ -279,7 +279,7 @@ for the sunset review, security baseline and transition to blocking checks.
 ### 7. MCP - Model Context Protocol
 | Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| Week 7 | Connecting tools and data with the Model Context Protocol |  | |
+| Week 7 | Connecting tools and data with the Model Context Protocol | [L20 - Building an MCP server](./notebooks/L20-MCPServer.ipynb) · [L21 - An agent with MCP tools](./notebooks/L21-MCPAgent.ipynb) | |
 
 ### 8. LangGraph (state, routing and parallelization)
 | Week | Session | Notebooks/Presentations | Exercises |
