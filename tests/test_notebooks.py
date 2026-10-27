@@ -1,4 +1,5 @@
 import csv
+from datetime import date
 import json
 import os
 from pathlib import Path
@@ -9,6 +10,7 @@ import shutil
 import tempfile
 
 import dotenv
+import httpx
 import langchain_anthropic
 import langchain_community.embeddings
 from langchain_core.embeddings import DeterministicFakeEmbedding
@@ -39,14 +41,28 @@ def _sample_value(annotation):
     return "simulado"
 
 
+# Argumentos que el modelo simulado propone para cada herramienta de los notebooks.
+TOOL_ARGS = {
+    "lookup_credit": {"customer": "C-1042", "product": "CLI", "payment": 500_000},
+    "check_restructuring": {"customer": "C-3307"},
+    "get_exchange_rate": {"date": date.today().isoformat()},
+    "search_documents": {"query": "¿Se puede reestructurar un crédito con mora?"},
+}
+
+
 class FakeChatAnthropic(BaseChatModel):
-    """Reemplaza a ChatAnthropic dentro del kernel: no llama a ningún proveedor."""
+    """Reemplaza a ChatAnthropic dentro del kernel: no llama a ningún proveedor.
+
+    Con herramientas, pide la primera (o la forzada) y responde en texto
+    cuando recibe su resultado: así se recorre el ciclo de un agente.
+    """
 
     model: str = "fake"
     max_tokens: int | None = None
     thinking: dict | None = None
     timeout: float | None = None
     max_retries: int | None = None
+    tool_names: list[str] = []
 
     @property
     def _llm_type(self):
@@ -55,7 +71,12 @@ class FakeChatAnthropic(BaseChatModel):
     def _generate(self, messages, stop=None, run_manager=None, **kwargs):
         CALLS.append(messages)
         usage = {"input_tokens": len(messages), "output_tokens": 1, "total_tokens": len(messages) + 1}
-        message = AIMessage(content="Respuesta simulada.", usage_metadata=usage)
+        if self.tool_names and messages[-1].type != "tool":
+            name = self.tool_names[0]
+            call = {"name": name, "args": TOOL_ARGS[name], "id": f"call_{len(CALLS)}", "type": "tool_call"}
+            message = AIMessage(content="", tool_calls=[call], usage_metadata=usage)
+        else:
+            message = AIMessage(content="Respuesta simulada.", usage_metadata=usage)
         return ChatResult(generations=[ChatGeneration(message=message)])
 
     def with_structured_output(self, schema, **kwargs):
@@ -66,9 +87,36 @@ class FakeChatAnthropic(BaseChatModel):
 
         return RunnableLambda(respond)
 
-    def bind_tools(self, tools, **kwargs):
-        # El modelo simulado nunca pide herramientas: cada turno del agente es una llamada.
-        return self
+    def bind_tools(self, tools, tool_choice=None, **kwargs):
+        names = [getattr(tool, "name", None) or tool.__name__ for tool in tools]
+        if isinstance(tool_choice, str) and tool_choice in names:
+            names = [tool_choice]
+        # bind() devuelve un RunnableBinding con .kwargs, como el modelo real.
+        return self.model_copy(update={"tool_names": names}).bind(tool_choice=tool_choice)
+
+
+class FakeResponse:
+    """Respuesta simulada de la API de la TRM en datos.gov.co."""
+
+    def __init__(self, status_code, payload):
+        self.status_code = status_code
+        self.is_error = status_code >= 400
+        self._payload = payload
+        self.text = json.dumps(payload)
+
+    def json(self):
+        return self._payload
+
+
+def fake_get(url, params=None, timeout=None):
+    params = params or {}
+    if "precio" in params.get("$order", "") or "'2" not in params.get("$where", "'2"):
+        return FakeResponse(400, {"message": "query.soql.no-such-column"})
+    if "2099" in params.get("$where", ""):
+        return FakeResponse(200, [])
+    row = {"valor": "4000.00", "unidad": "COP", "vigenciadesde": "2026-01-01T00:00:00.000",
+           "vigenciahasta": "2026-01-01T00:00:00.000"}
+    return FakeResponse(200, [row] * int(params.get("$limit", 1)))
 
 
 class FakeFastEmbedEmbeddings(DeterministicFakeEmbedding):
@@ -79,9 +127,10 @@ class FakeFastEmbedEmbeddings(DeterministicFakeEmbedding):
 
 
 def install():
-    """Instala los modelos simulados y anula la carga de `.env` en el kernel."""
+    """Instala los modelos y la API simulados, y anula la carga de `.env` en el kernel."""
     langchain_anthropic.ChatAnthropic = FakeChatAnthropic
     langchain_community.embeddings.FastEmbedEmbeddings = FakeFastEmbedEmbeddings
+    httpx.get = fake_get
     dotenv.load_dotenv = lambda *args, **kwargs: False
 
 
@@ -136,6 +185,12 @@ class NotebookChecks(unittest.TestCase):
         # El agente decide cuántas veces busca: solo se comprueba que el recorrido corre.
         self.assertGreater(run_notebook("L9-Memory.ipynb"), 0)
 
+    def test_tool_notebooks_run_offline(self):
+        # Los agentes deciden cuántas veces llamar al modelo: se comprueba que el recorrido corre.
+        for name in ("L13-tools.ipynb", "L19-ToolsAPI.ipynb"):
+            with self.subTest(notebook=name):
+                self.assertGreater(run_notebook(name), 0)
+
     def test_embedding_notebooks_run_offline_without_model_calls(self):
         for name in ("L3-Embeddings.ipynb", "L2-PDFSearchFAISS.ipynb"):
             with self.subTest(notebook=name):
@@ -143,7 +198,8 @@ class NotebookChecks(unittest.TestCase):
 
     def test_new_notebooks_use_haiku_5_5_without_temperature(self):
         for name in ("L1-IntroToLLMs.ipynb", "L12-dynamic-prompting.ipynb", "L4-RAG.ipynb",
-                     "L18-ConversationalRAG.ipynb", "L9-Memory.ipynb"):
+                     "L18-ConversationalRAG.ipynb", "L9-Memory.ipynb",
+                     "L13-tools.ipynb", "L19-ToolsAPI.ipynb"):
             source = "\n".join(
                 "".join(cell["source"])
                 for cell in json.loads((root / "notebooks" / name).read_text())["cells"]
