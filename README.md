@@ -115,6 +115,49 @@ and reuse of a nonempty vector store, without making API calls.
 From the checkout containing these files, configure `.env` as described above and
 run `uv run langgraph dev`. The `support` graph is registered in `langgraph.json`.
 
+## Local support chat API
+
+The FastAPI demo runs the modular support graph with PostgreSQL checkpoints.
+Use Python 3.12 or newer, Docker Compose, and the provider keys described above.
+Set `DB_URI` in `.env` to the local connection string in `.env.example`, then run:
+
+```sh
+uv sync --locked --no-dev
+docker compose up -d postgres
+uv run --no-sync uvicorn api.main:app --host 127.0.0.1 --port 8000
+```
+
+Wait for PostgreSQL to accept connections before starting the API. Startup creates
+LangGraph's checkpoint tables; the database user needs schema creation privileges.
+Open `http://127.0.0.1:8000/docs` for the endpoint schemas.
+
+```sh
+curl http://127.0.0.1:8000/chat/demo-thread \
+  -H 'Content-Type: application/json' -d '{"message":"Hola"}'
+curl -N http://127.0.0.1:8000/chat/demo-thread/stream \
+  -H 'Content-Type: application/json' -d '{"message":"Recuerdas mi nombre?"}'
+```
+
+`POST /chat/{chat_id}` returns the saved message history after the new reply.
+Reuse the same `chat_id` to continue a conversation, including after API restarts;
+use another ID to start a separate history. The streaming endpoint emits SSE
+`data:` events containing JSON objects with a `content` field (text or provider
+content blocks). It hides extraction/routing output and closes the response when
+the graph finishes. Calls execute in worker threads because this example uses the
+synchronous graph and PostgreSQL saver. Send turns sequentially for each chat ID;
+this demo does not serialize concurrent turns on the same conversation.
+
+This is a local teaching demo with no authentication or chat ownership checks.
+Keep the API on loopback; do not expose it publicly without access controls.
+Compose binds PostgreSQL to loopback and uses demo-only credentials. API calls
+use paid model services; document search also requires the configured PDF/vector
+store. Studio keeps its existing `support:agent` entry point and manages its own
+persistence independently.
+
+`docker compose down` stops the database while preserving the `postgres_data`
+volume. Removing that volume deletes saved conversations. For manual inspection,
+replace the sample thread ID in `datasets/SELECT thread_id, checkpoint_id.sql`.
+
 ## Continuous integration
 
 GitHub Actions runs `.github/workflows/ci.yml` on pull requests and pushes to
