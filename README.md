@@ -259,7 +259,7 @@ for the sunset review, security baseline and transition to blocking checks.
 ### 3. Embeddings & Vector Databases (FAISS, Chroma)
 | Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| Week 3 | Embeddings and Vector Databases with FAISS and Chroma | [L3 - Embeddings](./notebooks/L3-Embeddings.ipynb) · [L2 - PDF search with FAISS](./notebooks/L2-PDFSearchFAISS.ipynb) | |
+| Week 3 | Embeddings and Vector Databases with FAISS and Chroma | [L3 - Embeddings](./notebooks/L3-Embeddings.ipynb) · [L2 - FAISS and Chroma](./notebooks/L2-PDFSearchFAISS.ipynb) | |
 
 ### 4. RAG basics
 | Week | Session | Notebooks/Presentations | Exercises |
