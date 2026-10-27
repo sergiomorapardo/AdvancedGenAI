@@ -8,7 +8,9 @@
 - github: [sergiomorapardo](https://github.com/sergiomorapardo)
 
 
-This proposed course builds on *Advanced Topics in Analytics*, moving from classic NLP and Graph Learning into the world of **Generative AI**. Students will learn how to build real applications powered by **Large Language Models (LLMs)**, covering prompt engineering, working with commercial LLM APIs (OpenAI, Anthropic/Claude), embeddings and vector databases, **Retrieval-Augmented Generation (RAG)** from basics to advanced techniques (re-ranking, hybrid search, query transformation), **AI agents** (ReAct, tool use, function calling), orchestration frameworks such as **LangChain** and **LangGraph**, the **Model Context Protocol (MCP)**, multi-agent systems, evaluation of LLM applications (LLM-as-judge, RAGAS) and **LLMOps** for deployment. The course is project-oriented, with emphasis placed on writing software implementations that solve real-world problems end to end.
+This proposed course builds on *Advanced Topics in Analytics*, moving from classic NLP and Graph Learning into the world of **Generative AI**. Students will learn how to build real applications powered by **Large Language Models (LLMs)**, covering prompt engineering, working with commercial LLM APIs (OpenAI, Anthropic/Claude), embeddings and vector databases, **Retrieval-Augmented Generation (RAG)** from basics to advanced techniques (re-ranking, hybrid search, query transformation), **AI agents** (ReAct, tool use, function calling), orchestration frameworks such as **LangChain** and **LangGraph**, the **Model Context Protocol (MCP)**, multi-agent systems, evaluation of LLM applications (LLM-as-judge with LangSmith and OpenEvals) and **LLMOps** for deployment. The course is project-oriented, with emphasis placed on writing software implementations that solve real-world problems end to end.
+
+The examples share one running case: a fictional **fintech** whose assistant answers customers from its policies, looks up account data through tools and hands sensitive operations to a person. All data and documents are synthetic.
 
 
 ## Motivation
@@ -31,40 +33,31 @@ By the end of the course, students will be able to **design, connect (to real da
 | Module | Learning outcome |
 | :----| :------------- |
 | Intro to LLMs & Prompt Engineering | Explain how LLMs work and craft effective, structured prompts. |
-| Working with LLM APIs | Integrate OpenAI and Anthropic APIs; manage tokens, parameters and streaming. |
+| LLM APIs with LangChain | Call Anthropic and OpenAI models through LangChain; build message templates, structured outputs, and use `invoke`, `batch` and `stream`. |
 | Embeddings & Vector Databases | Represent text as embeddings and store/query them in FAISS and Chroma. |
 | RAG fundamentals | Build a retrieval-augmented pipeline that grounds an LLM on external data. |
 | Advanced RAG | Improve retrieval with re-ranking, hybrid search and query transformation. |
 | AI Agents fundamentals | Design agents that reason and use tools (ReAct, function calling). |
-| LangChain | Compose LLM applications with chains, memory and tools. |
+| Conversational memory | Keep multi-turn context with query rewriting, conversational RAG and per-thread memory. |
 | LangGraph | Build stateful, multi-step agent workflows with explicit control flow. |
 | MCP | Connect agents to external tools and data through the Model Context Protocol. |
 | Multi-agent systems | Orchestrate multiple collaborating agents for complex tasks. |
-| Evaluation of LLM apps | Measure quality with RAGAS and LLM-as-judge instead of relying on vibe-checks. |
+| Evaluation of LLM apps | Measure quality with datasets, code evaluators and calibrated LLM-as-judge (LangSmith, OpenEvals) instead of relying on vibe-checks. |
 | LLMOps & Deployment | Deploy, monitor and manage the cost/latency of LLM apps in production. |
 
 
 ## Requirements
-* [Python](http://www.python.org) version >= 3.10;
-* [LangChain](https://python.langchain.com), framework for building LLM applications;
-* [LangGraph](https://langchain-ai.github.io/langgraph/), library for stateful, multi-step agents;
-* [langchain-openai](https://python.langchain.com/docs/integrations/platforms/openai/), OpenAI integration for LangChain;
-* [langchain-anthropic](https://python.langchain.com/docs/integrations/platforms/anthropic/), Anthropic/Claude integration for LangChain;
-* [openai](https://github.com/openai/openai-python), the official OpenAI Python SDK;
-* [anthropic](https://github.com/anthropics/anthropic-sdk-python), the official Anthropic (Claude) Python SDK;
-* [chromadb](https://www.trychroma.com/), open-source embedding/vector database;
-* [faiss-cpu](https://github.com/facebookresearch/faiss), library for efficient similarity search;
-* [sentence-transformers](https://www.sbert.net/), embeddings for sentences and paragraphs;
-* [tiktoken](https://github.com/openai/tiktoken), fast BPE tokenizer for OpenAI models;
-* [ragas](https://docs.ragas.io/), evaluation framework for RAG pipelines;
-* [python-dotenv](https://github.com/theskumar/python-dotenv), management of environment variables and API keys;
-* [Jupyter](https://jupyter.org/), with the additional libraries required for the notebook interface.
 
-A good, easy to install option that supports Mac, Windows, and Linux, and that has all of these packages (and much more) is the [Anaconda](https://www.anaconda.com/). All requirements are also listed in [`requirements.txt`](./requirements.txt).
+* [Python](https://www.python.org) 3.12 (pinned in [`.python-version`](./.python-version)) and [uv](https://docs.astral.sh/uv/), which installs the locked dependencies from [`pyproject.toml`](./pyproject.toml) and [`uv.lock`](./uv.lock);
+* An [Anthropic](https://console.anthropic.com/) API key. Claude Haiku is the default model; OpenAI appears only as an optional alternative;
+* A [LangSmith](https://smith.langchain.com/) API key for tracing and evaluation (free tier). Tracing stays off unless you enable it;
+* [Docker](https://docs.docker.com/get-docker/), only for the PostgreSQL-backed examples.
 
-You will need API keys to work with commercial LLMs. Copy [`.env.example`](./.env.example) to `.env` and fill in your `OPENAI_API_KEY` and `ANTHROPIC_API_KEY`.
+Main libraries: [LangChain](https://docs.langchain.com/oss/python/langchain/overview), [LangGraph](https://docs.langchain.com/oss/python/langgraph/overview), [LangSmith](https://docs.langchain.com/langsmith/home), [OpenEvals](https://github.com/langchain-ai/openevals), [Jinja](https://jinja.palletsprojects.com/), [FAISS](https://github.com/facebookresearch/faiss), [Chroma](https://www.trychroma.com/) and [Jupyter](https://jupyter.org/).
 
-GIT!! Unfortunatelly out of the scope of this class, but please take a look at these [tutorials](https://help.github.com/articles/good-resources-for-learning-git-and-github/)
+Follow [SETUP.md](./SETUP.md) to install the environment and configure your keys.
+
+Git is out of the scope of this class, but please take a look at these [tutorials](https://docs.github.com/en/get-started/start-your-journey/git-and-github-learning-resources).
 
 ## Agent examples: single-file and modular
 
@@ -256,62 +249,62 @@ for the sunset review, security baseline and transition to blocking checks.
 ### 1. Intro to LLMs & Prompt Engineering
 | Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| Week 1 | Introduction to Large Language Models & Prompt Engineering | [L1 - Intro to LLMs](./notebooks/L1-IntroToLLMs.ipynb) | |
+| Week 1 | Introduction to Large Language Models & Prompt Engineering | [L1 - Intro to LLMs](./notebooks/L1-IntroToLLMs.ipynb) · [L12 - Dynamic prompting](./notebooks/L12-dynamic-prompting.ipynb) | |
 
-### 2. Working with LLM APIs (OpenAI, Anthropic/Claude)
+### 2. LLM APIs with LangChain (Anthropic/Claude, OpenAI)
 | Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| Week 2 | Calling LLM APIs: OpenAI and Anthropic/Claude | | |
+| Week 2 | Calling LLMs with LangChain: messages, templates and structured output | [L11 - Structured output](./notebooks/L11-structured_output.ipynb) | |
 
 ### 3. Embeddings & Vector Databases (FAISS, Chroma)
 | Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| Week 3 | Embeddings and Vector Databases with FAISS and Chroma | | |
+| Week 3 | Embeddings and Vector Databases with FAISS and Chroma | [L3 - Embeddings](./notebooks/L3-Embeddings.ipynb) · [L2 - PDF search with FAISS](./notebooks/L2-PDFSearchFAISS.ipynb) | |
 
 ### 4. RAG basics
 | Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| Week 4 | Retrieval-Augmented Generation fundamentals | | |
+| Week 4 | Retrieval-Augmented Generation fundamentals | [L4 - RAG chat over PDFs](./notebooks/L4-RAGHistoryChat.ipynb) | |
 
 ### 5. Advanced RAG (re-ranking, hybrid search, query transformation)
 | Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| Week 5 | Advanced RAG: re-ranking, hybrid search and query transformation | | |
+| Week 5 | Advanced RAG: re-ranking, hybrid search and query transformation |  | |
 
 ### 6. AI Agents fundamentals (ReAct, tool use, function calling)
 | Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| Week 6 | AI Agents: ReAct, tool use and function calling | | |
+| Week 6 | AI Agents: ReAct, tool use and function calling | [L13 - Tools](./notebooks/L13-tools.ipynb) | |
 
-### 7. LangChain
+### 7. Conversational memory
 | Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| Week 7 | Building LLM applications with LangChain | | |
+| Week 7 | Conversational RAG, query rewriting and per-thread memory | [L9 - Message history](./notebooks/L9-HistoryMessages.ipynb) | |
 
 ### 8. LangGraph (stateful/multi-step agents)
 | Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| Week 8 | Stateful, multi-step agents with LangGraph | | |
+| Week 8 | Stateful, multi-step agents with LangGraph: chaining, routing and parallelization | [L6 - LangGraph in Studio](./notebooks/L6-LangGraph.ipynb) · [L7 - Simple graph](./notebooks/L7-LangGraphSimple.ipynb) · [L8 - Messages](./notebooks/L8-LangGraphMessages.ipynb) · [L10 - Chaining](./notebooks/L10-chaining.ipynb) · [L14 - Routing](./notebooks/L14-Routing.ipynb) · [L15 - Parallelization](./notebooks/L15-Paralelization.ipynb) | |
 
 ### 9. MCP - Model Context Protocol
 | Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| Week 9 | Connecting tools and data with the Model Context Protocol | | |
+| Week 9 | Connecting tools and data with the Model Context Protocol |  | |
 
 ### 10. Multi-agent systems
 | Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| Week 10 | Designing and orchestrating multi-agent systems | | |
+| Week 10 | Orchestrator-workers and evaluator-optimizer | [L16 - Orchestrator](./notebooks/L16-Orchestrator.ipynb) · [L17 - Evaluator-optimizer](./notebooks/L17-EvaluatorOptimizer.ipynb) | |
 
-### 11. Evaluation of LLM apps (LLM-as-judge, RAGAS)
+### 11. Evaluation of LLM apps (LLM-as-judge, OpenEvals)
 | Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| Week 11 | Evaluating LLM applications: LLM-as-judge and RAGAS | | |
+| Week 11 | Evaluating LLM applications with LangSmith datasets, code evaluators and LLM-as-judge | [L5 - RAG evaluation](./notebooks/L5-RAGEvaluation.ipynb) | |
 
 ### 12. LLMOps & Deployment
 | Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| Week 12 | LLMOps: deploying and monitoring LLM applications | | |
+| Week 12 | LLMOps: deploying and monitoring LLM applications |  | |
 
 ## Interest Links 🔗
 Module | Topic | Material |
