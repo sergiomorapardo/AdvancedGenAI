@@ -1,0 +1,94 @@
+# Claude reviews every Dependabot PR: changelog, usage in the repo and offline tests.
+# If it approves a patch or minor update, GitHub squash-merges it once the required checks pass.
+# Needs the Dependabot secret CLAUDE_CODE_OAUTH_TOKEN (`claude setup-token`) and the Claude GitHub app.
+name: Dependabot review
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+permissions: {}
+
+concurrency:
+  group: dependabot-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    # Only Dependabot's own pushes: Claude's fix commits do not start another review.
+    if: github.event.pull_request.user.login == 'dependabot[bot]' && github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
+      actions: read
+    env:
+      LANGSMITH_TRACING: "false"
+    steps:
+      - name: Read the update metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3.1.0
+
+      - name: Check out the PR branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+        with:
+          version: "0.12.10"
+          enable-cache: true
+
+      - name: Review with Claude
+        id: claude
+        uses: anthropics/claude-code-action@6fed3ca145920b639991cb756090506e1bcaf515 # v1.0.245
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          allowed_bots: "dependabot[bot]"
+          prompt: |
+            Review Dependabot PR #${{ github.event.pull_request.number }} in ${{ github.repository }}: ${{ github.event.pull_request.title }}
+            Dependencies: ${{ steps.metadata.outputs.dependency-names }}
+            From ${{ steps.metadata.outputs.previous-version }} to ${{ steps.metadata.outputs.new-version }} (${{ steps.metadata.outputs.update-type }}).
+
+            1. Read the release notes or changelog of each updated dependency between both versions.
+            2. Search the repository (src/, tests/, notebooks/, .claude/, .github/) for the APIs that changed.
+            3. Run the offline tests: `uv sync --locked --no-dev --group quality`, then `uv run --no-sync python -m pytest -q`.
+               Never execute notebooks or anything that calls a paid model; there are no API keys in this job.
+            4. If the repository needs a compatible change, make the smallest fix on this branch, commit it with a
+               Conventional Commit plus Gitmoji (for example `fix(deps): 🐛 adapt ... to <package> <version>`) and push.
+               Do not edit pyproject.toml or uv.lock by hand and do not change workflow files.
+            5. Post one PR comment in Spanish with what changed upstream, what it affects here, the test result and your verdict.
+
+            Answer `merge` only when nothing in the repository is affected or your fix is pushed, and the tests pass.
+            Answer `hold`, with the reason, when a person must decide: breaking changes you could not fix, failing tests,
+            unclear release notes or a security concern.
+          claude_args: >-
+            --model opus
+            --max-turns 40
+            --allowedTools "Read,Edit,Write,Glob,Grep,WebFetch,Bash(uv:*),Bash(git:*),Bash(gh pr:*),Bash(gh release:*),Bash(gh api:*)"
+            --json-schema '{"type":"object","properties":{"verdict":{"type":"string","enum":["merge","hold"]},"reason":{"type":"string"}},"required":["verdict","reason"]}'
+
+      - name: Enable auto-merge
+        if: >-
+          steps.metadata.outputs.update-type != 'version-update:semver-major' &&
+          fromJSON(steps.claude.outputs.structured_output).verdict == 'merge'
+        run: gh pr merge --auto --squash "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Keep the PR for a person
+        if: >-
+          steps.metadata.outputs.update-type == 'version-update:semver-major' ||
+          fromJSON(steps.claude.outputs.structured_output).verdict != 'merge'
+        run: |
+          gh pr merge --disable-auto "$PR_URL" || true
+          echo "Auto-merge off: $REASON" >> "$GITHUB_STEP_SUMMARY"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          REASON: ${{ fromJSON(steps.claude.outputs.structured_output).reason }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
