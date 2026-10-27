@@ -11,6 +11,12 @@ Neither an old version nor a quiet release history alone proves abandonment.
   --locked --outdated --depth 1` reports updates without changing the lock.
 - For each dependency PR: inspect release notes and breaking changes, run tests,
   LangGraph startup and build checks, then merge individually with squash.
+  The `Dependabot review` workflow does this with Claude: it reads the release
+  notes, searches the repository for changed APIs, runs the offline tests, pushes
+  a minimal fix when needed and comments its verdict. For a patch or minor update
+  with verdict `merge`, it enables auto-merge, so GitHub squash-merges once the
+  required checks pass. Major updates and `hold` verdicts wait for a person.
+  A PR that falls behind `main` needs `@dependabot rebase` before it can merge.
 - Monthly and before course releases: review upstream maintenance status for
   direct dependencies and APIs used in agents/notebooks. Record official sunset
   announcements, affected imports, alternatives and a migration plan here.
