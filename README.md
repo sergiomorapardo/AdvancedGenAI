@@ -259,7 +259,7 @@ for the sunset review, security baseline and transition to blocking checks.
 ### 3. AI Agents fundamentals (ReAct, tool use, function calling)
 | Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| Week 3 | Tools and a first agent | [L13 - Tools](./notebooks/L13-tools.ipynb) | |
+| Week 3 | Tools and a first agent, and tool calling with an external API | [L13 - Tools](./notebooks/L13-tools.ipynb) · [L19 - Tools with an external API](./notebooks/L19-ToolsAPI.ipynb) | |
 
 ### 4. Embeddings, Vector Databases & RAG (FAISS, Chroma)
 | Week | Session | Notebooks/Presentations | Exercises |
