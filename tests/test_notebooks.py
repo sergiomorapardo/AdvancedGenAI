@@ -217,6 +217,15 @@ class NotebookChecks(unittest.TestCase):
             with self.subTest(notebook=name):
                 self.assertGreater(run_notebook(name), 0)
 
+    def test_langgraph_notebooks_run_offline(self):
+        expected = {"L7-LangGraphSimple.ipynb": 0, "L8-LangGraphMessages.ipynb": 2,
+                    "L14-Routing.ipynb": 6, "L15-Paralelization.ipynb": 3}
+        for name, calls in expected.items():
+            with self.subTest(notebook=name):
+                self.assertEqual(run_notebook(name), calls)
+        # La compuerta de L10 depende de la clasificación: solo se comprueba que corre.
+        self.assertGreater(run_notebook("L10-chaining.ipynb"), 0)
+
     def test_embedding_notebooks_run_offline_without_model_calls(self):
         for name in ("L3-Embeddings.ipynb", "L2-PDFSearchFAISS.ipynb"):
             with self.subTest(notebook=name):
