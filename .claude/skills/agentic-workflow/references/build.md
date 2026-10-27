@@ -51,7 +51,7 @@ The `README.md` states the problem in one sentence, two or three success criteri
 3. **Run log always**; never filter events before saving them and never remove it to "simplify".
 4. **Tracing off by default.** With LangSmith, every top-level `invoke`, `batch` or `stream` is one trace, including `ChatPromptTemplate.invoke`; fill templates with `format_messages` when the trace is not needed.
 5. **Synthetic data** in the code (8–12 rows with one or two traps that force the agent to read, such as zero availability or a missing product). Real data only if it is authorized and anonymized.
-6. **Read-only tools.** Writing, sending or reserving requires human approval, which is not in this skill yet: generate a draft and say so.
+6. **Read-only tools.** Writing, sending or reserving requires human approval: generate a draft here, and build the approval step with the agent-patterns skill.
 7. **Names in English** for files, functions, classes and variables.
 8. **Keep it simple**: the smallest code that meets the goal, no helpers the blueprint does not need.
 9. **RAG cites and checks.** Every answer from documents cites `[file, p. N]`, and `check_citations` confirms each citation was retrieved. Embeddings are local unless the person has a provider key and a reason.

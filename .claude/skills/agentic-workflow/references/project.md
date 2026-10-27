@@ -40,7 +40,8 @@ The examples follow the course notebooks, which use the same ACME case and model
 | `conversational_rag.py`, `memory_agent.py` | 5 · L9, L10 |
 | Evaluation (evaluate-app skill) | 6 · L11 |
 | `mcp_agent.py` (servers: mcp-server skill) | 7 · L12, L13 |
-| LangGraph routing and parallel branches | 8 · L15, L16, L17, L18, L19 (not yet in the skill) |
-| Human approval | 9 · L20 (not yet in the skill) |
-| Orchestrator-workers and subgraphs | 10 · L21 (not yet in the skill) |
-| Evaluator-optimizer | 11 · L22 (not yet in the skill) |
+| LangGraph chaining, routing and parallel branches (agent-patterns skill) | 8 · L15, L16, L17, L18, L19 |
+| Human approval (agent-patterns skill) | 9 · L20 |
+| Orchestrator-workers and subgraphs (agent-patterns skill) | 10 · L21 |
+| Evaluator-optimizer (agent-patterns skill) | 11 · L22 |
+| Serving the app as an API (deploy-app skill) | 12 · README, local support chat API |

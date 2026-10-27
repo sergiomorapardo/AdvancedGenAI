@@ -22,8 +22,8 @@
 | Remember a conversation between invokes | `create_agent(..., checkpointer=...)` + `thread_id` | Each `invoke` starts empty; the checkpointer saves and reloads the messages of a thread |
 | Several apps need the same tools or documents | Tools of an MCP server, loaded with `MCPAdapter` | One implementation, discovered by every client; the agent does not change when the server does, if the contract holds |
 | Only the person knows which item they meant | Elicitation from the server: the agent pauses and resumes | The model must not guess for the person |
-| Explicit state, routing, parallel branches | LangGraph `StateGraph` | Not yet in this skill |
-| Human approval before acting | LangGraph interrupts | Not yet in this skill |
+| Explicit state, routing, parallel branches, orchestrator-workers, a loop with an evaluator | LangGraph `StateGraph` | The agent-patterns skill |
+| Human approval before acting | `interrupt` or `HumanInTheLoopMiddleware` | The agent-patterns skill |
 
 ## Who controls what
 
