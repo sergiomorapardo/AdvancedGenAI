@@ -84,6 +84,21 @@ class SupportChecks(unittest.TestCase):
         retrieve.assert_not_called()
         self.assertEqual(state['messages'], history)
 
+    def test_factory_keeps_history_in_the_same_thread_and_isolates_others(self):
+        from langgraph.checkpoint.memory import InMemorySaver
+
+        graph = graph_module.make_graph(checkpointer=InMemorySaver())
+        with patch.object(extractor, 'llm_with_structured_output') as extract, patch.object(conversation, 'llm_with_tools') as chat:
+            extract.invoke.return_value = extractor.ContactInfo(name='Ana')
+            chat.invoke.side_effect = [AIMessage(content=text) for text in ('First', 'Second', 'Other')]
+            first = graph.invoke({'messages': [HumanMessage(content='One')]}, {'configurable': {'thread_id': 'a'}})
+            second = graph.invoke({'messages': [HumanMessage(content='Two')]}, {'configurable': {'thread_id': 'a'}})
+            other = graph.invoke({'messages': [HumanMessage(content='Three')]}, {'configurable': {'thread_id': 'b'}})
+        self.assertEqual([m.content for m in first['messages']], ['One', 'First'])
+        self.assertEqual([m.content for m in second['messages']], ['One', 'First', 'Two', 'Second'])
+        self.assertEqual([m.content for m in other['messages']], ['Three', 'Other'])
+        self.assertIsNone(graph_module.agent.checkpointer)
+
     def test_intent_routes_use_system_prompt_and_preserve_history(self):
         history = [HumanMessage(content='Hola')]
         state = {'messages': history}
