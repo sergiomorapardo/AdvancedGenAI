@@ -19,6 +19,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages import AIMessage
 from langchain_core.outputs import ChatGeneration, ChatResult
 from langchain_core.runnables import RunnableLambda
+from pydantic import BaseModel
 import nbformat
 from nbclient import NotebookClient
 from pypdf import PdfReader
@@ -30,16 +31,33 @@ datasets = root / "datasets"
 CALLS = []
 
 
-def _sample_value(annotation):
+# Valores de prueba para campos que los notebooks validan con un formato.
+FIELD_VALUES = {"customer": "C-1042"}
+
+
+def _sample_value(annotation, name=""):
+    if name in FIELD_VALUES:
+        return FIELD_VALUES[name]
+    origin, args = typing.get_origin(annotation), typing.get_args(annotation)
+    if origin is typing.Literal:
+        return args[0]
+    if origin is list:
+        return []
+    if type(None) in args:  # campo opcional: el dato no está
+        return None
+    if isinstance(annotation, type) and issubclass(annotation, BaseModel):
+        return _sample_model(annotation)
     if annotation is int:
-        return 0
+        return 1
     if annotation is float:
-        return 0.0
+        return 1.0
     if annotation is bool:
         return False
-    if typing.get_origin(annotation) is list:
-        return []
     return "simulado"
+
+
+def _sample_model(schema):
+    return schema(**{name: _sample_value(field.annotation, name) for name, field in schema.model_fields.items()})
 
 
 # Argumentos que el modelo simulado propone para cada herramienta de los notebooks.
@@ -80,11 +98,14 @@ class FakeChatAnthropic(BaseChatModel):
             message = AIMessage(content="Respuesta simulada.", usage_metadata=usage)
         return ChatResult(generations=[ChatGeneration(message=message)])
 
-    def with_structured_output(self, schema, **kwargs):
+    def with_structured_output(self, schema, include_raw=False, **kwargs):
         def respond(prompt):
             CALLS.append(prompt)
-            values = {name: _sample_value(field.annotation) for name, field in schema.model_fields.items()}
-            return schema(**values)
+            parsed = _sample_model(schema)
+            if include_raw:
+                usage = {"input_tokens": 1, "output_tokens": 1, "total_tokens": 2}
+                return {"raw": AIMessage(content="", usage_metadata=usage), "parsed": parsed, "parsing_error": None}
+            return parsed
 
         return RunnableLambda(respond)
 
@@ -178,6 +199,10 @@ class NotebookChecks(unittest.TestCase):
         self.assertEqual(run_notebook("L4-RAG.ipynb"), 3,
                          "Actualiza el número de llamadas en la introducción de L4")
 
+    def test_l11_runs_offline_with_the_documented_calls(self):
+        self.assertEqual(run_notebook("L11-structured_output.ipynb"), 8,
+                         "Actualiza el número de llamadas en la introducción de L11")
+
     def test_l18_runs_offline_with_the_documented_calls(self):
         self.assertEqual(run_notebook("L18-ConversationalRAG.ipynb"), 8,
                          "Actualiza el número de llamadas en la introducción de L18")
@@ -198,7 +223,7 @@ class NotebookChecks(unittest.TestCase):
                 self.assertEqual(run_notebook(name), 0)
 
     def test_new_notebooks_use_haiku_5_5_without_temperature(self):
-        for name in ("L1-IntroToLLMs.ipynb", "L12-dynamic-prompting.ipynb", "L4-RAG.ipynb",
+        for name in ("L1-IntroToLLMs.ipynb", "L11-structured_output.ipynb", "L12-dynamic-prompting.ipynb", "L4-RAG.ipynb",
                      "L18-ConversationalRAG.ipynb", "L9-Memory.ipynb",
                      "L13-tools.ipynb", "L19-ToolsAPI.ipynb", "L5-RAGEvaluation.ipynb",
                      "L21-MCPAgent.ipynb"):
