@@ -32,17 +32,17 @@ By the end of the course, students will be able to **design, connect (to real da
 
 | Module | Learning outcome |
 | :----| :------------- |
-| Intro to LLMs & Prompt Engineering | Explain how LLMs work and craft effective, structured prompts. |
-| LLM APIs with LangChain | Call Anthropic and OpenAI models through LangChain; build message templates, structured outputs, and use `invoke`, `batch` and `stream`. |
-| Embeddings & Vector Databases | Represent text as embeddings and store/query them in FAISS and Chroma. |
-| RAG fundamentals | Build a retrieval-augmented pipeline that grounds an LLM on external data. |
-| Advanced RAG | Improve retrieval with re-ranking, hybrid search and query transformation. |
-| AI Agents fundamentals | Design agents that reason and use tools (ReAct, function calling). |
-| Conversational memory | Keep multi-turn context with query rewriting, conversational RAG and per-thread memory. |
-| LangGraph | Build stateful, multi-step agent workflows with explicit control flow. |
-| MCP | Connect agents to external tools and data through the Model Context Protocol. |
-| Multi-agent systems | Orchestrate multiple collaborating agents for complex tasks. |
+| Intro to LLMs & LangChain | Call Anthropic and OpenAI models through LangChain; build message templates, structured outputs, and use `invoke`, `batch` and `stream`. |
+| Prompt engineering & dynamic prompting | Craft structured prompts and render them from data with Jinja, validating inputs and outputs. |
+| AI Agents fundamentals | Design agents that reason and use tools (ReAct, function calling) and check their answers against tool results. |
+| Embeddings, Vector Databases & RAG | Represent text as embeddings, store/query them in FAISS and Chroma, and ground answers on documents with citations. |
+| Conversational RAG & memory | Rewrite follow-up questions, use multi-query and hybrid search, measure retrieval, and keep per-thread memory. |
 | Evaluation of LLM apps | Measure quality with datasets, code evaluators and calibrated LLM-as-judge (LangSmith, OpenEvals) instead of relying on vibe-checks. |
+| MCP | Connect agents to external tools and data through the Model Context Protocol. |
+| LangGraph | Build stateful, multi-step workflows with explicit control flow, routing and parallelization. |
+| Human-in-the-loop | Pause a workflow for human approval and resume it with persistence. |
+| Multi-agent systems | Orchestrate workers dynamically and delegate subtasks to subgraphs. |
+| Evaluator-optimizer | Iterate on an answer with an evaluator until it meets explicit criteria. |
 | LLMOps & Deployment | Deploy, monitor and manage the cost/latency of LLM apps in production. |
 
 
@@ -246,60 +246,60 @@ for the sunset review, security baseline and transition to blocking checks.
 
 *Draft sequence of 12 weekly sessions. Calendar dates will be added once the course is approved and scheduled.*
 
-### 1. Intro to LLMs & Prompt Engineering
+### 1. Intro to LLMs & LangChain
 | Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| Week 1 | Introduction to Large Language Models & Prompt Engineering | [L1 - Intro to LLMs](./notebooks/L1-IntroToLLMs.ipynb) · [L12 - Dynamic prompting](./notebooks/L12-dynamic-prompting.ipynb) | |
+| Week 1 | LangChain step by step: messages, templates, structured output and streaming | [L1 - LangChain step by step](./notebooks/L1-IntroToLLMs.ipynb) · [L11 - Structured output](./notebooks/L11-structured_output.ipynb) | |
 
-### 2. LLM APIs with LangChain (Anthropic/Claude, OpenAI)
+### 2. Prompt engineering & dynamic prompting (Jinja)
 | Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| Week 2 | Calling LLMs with LangChain: messages, templates and structured output | [L11 - Structured output](./notebooks/L11-structured_output.ipynb) | |
+| Week 2 | Dynamic prompts with Jinja, schemas and traces | [L12 - Dynamic prompting](./notebooks/L12-dynamic-prompting.ipynb) | |
 
-### 3. Embeddings & Vector Databases (FAISS, Chroma)
+### 3. AI Agents fundamentals (ReAct, tool use, function calling)
 | Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| Week 3 | Embeddings and Vector Databases with FAISS and Chroma | [L3 - Embeddings](./notebooks/L3-Embeddings.ipynb) · [L2 - FAISS and Chroma](./notebooks/L2-PDFSearchFAISS.ipynb) | |
+| Week 3 | Tools and a first agent | [L13 - Tools](./notebooks/L13-tools.ipynb) | |
 
-### 4. RAG basics
+### 4. Embeddings, Vector Databases & RAG (FAISS, Chroma)
 | Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| Week 4 | Retrieval-Augmented Generation fundamentals | [L4 - RAG with citations](./notebooks/L4-RAG.ipynb) | |
+| Week 4 | Embeddings, vector stores and answers with citations | [L3 - Embeddings](./notebooks/L3-Embeddings.ipynb) · [L2 - FAISS and Chroma](./notebooks/L2-PDFSearchFAISS.ipynb) · [L4 - RAG with citations](./notebooks/L4-RAG.ipynb) | |
 
-### 5. Advanced RAG (re-ranking, hybrid search, query transformation)
+### 5. Conversational RAG & memory (query transformation, hybrid search)
 | Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| Week 5 | Advanced RAG: re-ranking, hybrid search and query transformation |  | |
+| Week 5 | Follow-up questions, multi-query, retrieval metrics and per-thread memory | [L18 - Conversational RAG](./notebooks/L18-ConversationalRAG.ipynb) · [L9 - Memory with an agent](./notebooks/L9-Memory.ipynb) | |
 
-### 6. AI Agents fundamentals (ReAct, tool use, function calling)
+### 6. Evaluation of LLM apps (LLM-as-judge, OpenEvals)
 | Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| Week 6 | AI Agents: ReAct, tool use and function calling | [L13 - Tools](./notebooks/L13-tools.ipynb) | |
+| Week 6 | Evaluating LLM applications with LangSmith datasets, code evaluators and LLM-as-judge | [L5 - RAG evaluation](./notebooks/L5-RAGEvaluation.ipynb) | |
 
-### 7. Conversational memory
+### 7. MCP - Model Context Protocol
 | Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| Week 7 | Conversational RAG, query rewriting and per-thread memory | [L9 - Message history](./notebooks/L9-HistoryMessages.ipynb) | |
+| Week 7 | Connecting tools and data with the Model Context Protocol |  | |
 
-### 8. LangGraph (stateful/multi-step agents)
+### 8. LangGraph (state, routing and parallelization)
 | Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| Week 8 | Stateful, multi-step agents with LangGraph: chaining, routing and parallelization | [L6 - LangGraph in Studio](./notebooks/L6-LangGraph.ipynb) · [L7 - Simple graph](./notebooks/L7-LangGraphSimple.ipynb) · [L8 - Messages](./notebooks/L8-LangGraphMessages.ipynb) · [L10 - Chaining](./notebooks/L10-chaining.ipynb) · [L14 - Routing](./notebooks/L14-Routing.ipynb) · [L15 - Parallelization](./notebooks/L15-Paralelization.ipynb) | |
+| Week 8 | Stateful workflows with LangGraph: chaining, routing and parallelization | [L6 - LangGraph in Studio](./notebooks/L6-LangGraph.ipynb) · [L7 - Simple graph](./notebooks/L7-LangGraphSimple.ipynb) · [L8 - Messages](./notebooks/L8-LangGraphMessages.ipynb) · [L10 - Chaining](./notebooks/L10-chaining.ipynb) · [L14 - Routing](./notebooks/L14-Routing.ipynb) · [L15 - Parallelization](./notebooks/L15-Paralelization.ipynb) | |
 
-### 9. MCP - Model Context Protocol
+### 9. Human-in-the-loop
 | Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| Week 9 | Connecting tools and data with the Model Context Protocol |  | |
+| Week 9 | Persistence, approval and resumption |  | |
 
-### 10. Multi-agent systems
+### 10. Multi-agent systems (orchestrator-workers)
 | Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| Week 10 | Orchestrator-workers and evaluator-optimizer | [L16 - Orchestrator](./notebooks/L16-Orchestrator.ipynb) · [L17 - Evaluator-optimizer](./notebooks/L17-EvaluatorOptimizer.ipynb) | |
+| Week 10 | Dynamic delegation and subgraphs | [L16 - Orchestrator](./notebooks/L16-Orchestrator.ipynb) | |
 
-### 11. Evaluation of LLM apps (LLM-as-judge, OpenEvals)
+### 11. Evaluator-optimizer
 | Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| Week 11 | Evaluating LLM applications with LangSmith datasets, code evaluators and LLM-as-judge | [L5 - RAG evaluation](./notebooks/L5-RAGEvaluation.ipynb) | |
+| Week 11 | Iterating an answer against an evaluator | [L17 - Evaluator-optimizer](./notebooks/L17-EvaluatorOptimizer.ipynb) | |
 
 ### 12. LLMOps & Deployment
 | Week | Session | Notebooks/Presentations | Exercises |
