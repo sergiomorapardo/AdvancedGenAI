@@ -1,0 +1,9 @@
+review_id,id,answer,human_correct,note
+r1,q01,"El Crédito Express va desde 200.000 hasta 3.000.000 COP [acme_credit_policy.pdf, p. 1].",1,Completa y con cita.
+r2,q05,"Para el Crédito Libre Inversión se necesitan 550 puntos [acme_credit_policy.pdf, p. 2].",0,Cifra equivocada: son 600 puntos; 550 es el del Crédito Express.
+r3,q13,"No, puedes pagar antes de tiempo, total o parcialmente, sin ninguna penalidad.",1,Correcta aunque no cita la fuente.
+r4,q16,"Sí, puedes reestructurar tu crédito desde la app [acme_collections_policy.pdf, p. 2].",0,Incompleta: no dice que es una sola vez por año.
+r5,q19,"La tasa del Crédito Express es del 1,9 % mensual [acme_credit_policy.pdf, p. 1].",0,Inventada: la tasa se informa en cada oferta.
+r6,q10,"Tienes 5 días hábiles después del desembolso: devuelves todo el dinero y no pagas intereses ni seguro [acme_disbursement_policy.pdf, p. 2].",1,Correcta en paráfrasis.
+r7,q12,"No. ACME no recibe efectivo; puedes pagar con débito automático, en la app o por PSE [acme_fees_guide.pdf, p. 1].",1,Completa y con cita.
+r8,q17,"Sí, puedes pedir un periodo de gracia de hasta 6 meses pagando solo intereses [acme_collections_policy.pdf, p. 2].",0,Plazo equivocado: son 3 meses.

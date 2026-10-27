@@ -69,6 +69,12 @@ jobs:
               measurement.save()
           PY
 
+      - name: Run Claude Code skill tests
+        # The skills keep their pytest tests (fixtures and parametrize); no model calls, no traces.
+        run: >-
+          uv run --no-sync python -m pytest -q
+          tests/test_agentic_workflow.py tests/test_evaluate_app.py tests/test_mcp_server.py
+
       - name: Generate coverage reports
         id: coverage
         if: always()
