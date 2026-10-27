@@ -110,7 +110,7 @@ run `uv run langgraph dev`. The `support` graph is registered in `langgraph.json
 
 ## Local support chat API
 
-The FastAPI demo runs the modular support graph with PostgreSQL checkpoints.
+The FastAPI demo serves the ACME support agent ([`src/agents/acme.py`](src/agents/acme.py)) with PostgreSQL checkpoints. The agent joins the pieces of the course: cited search over the ACME policies (week 4), the read-only credit portfolio of the MCP server (week 7) and memory per conversation (week 5). LangGraph Studio opens the same agent as `acme`.
 Use Python 3.12 or newer, Docker Compose, and the provider keys described above.
 Set `DB_URI` in `.env` to the local connection string in `.env.example`, then run:
 
@@ -126,16 +126,16 @@ Open `http://127.0.0.1:8000/docs` for the endpoint schemas.
 
 ```sh
 curl http://127.0.0.1:8000/chat/demo-thread \
-  -H 'Content-Type: application/json' -d '{"message":"Hola"}'
+  -H 'Content-Type: application/json' -d '{"message":"Soy el cliente C-3307, ¿cuánto tengo vencido?"}'
 curl -N http://127.0.0.1:8000/chat/demo-thread/stream \
-  -H 'Content-Type: application/json' -d '{"message":"Recuerdas mi nombre?"}'
+  -H 'Content-Type: application/json' -d '{"message":"¿Y todavía puedo reestructurarlo?"}'
 ```
 
 `POST /chat/{chat_id}` returns the saved message history after the new reply.
 Reuse the same `chat_id` to continue a conversation, including after API restarts;
 use another ID to start a separate history. The streaming endpoint emits SSE
 `data:` events containing JSON objects with a `content` field (text or provider
-content blocks). It hides extraction/routing output and closes the response when
+content blocks). It hides tool output and closes the response when
 the graph finishes. Calls execute in worker threads because this example uses the
 synchronous graph and PostgreSQL saver. Send turns sequentially for each chat ID;
 this demo does not serialize concurrent turns on the same conversation.
@@ -143,9 +143,8 @@ this demo does not serialize concurrent turns on the same conversation.
 This is a local teaching demo with no authentication or chat ownership checks.
 Keep the API on loopback; do not expose it publicly without access controls.
 Compose binds PostgreSQL to loopback and uses demo-only credentials. API calls
-use paid model services; document search also requires the configured PDF/vector
-store. Studio keeps its existing `support:agent` entry point and manages its own
-persistence independently.
+use paid model services; the first policy search downloads the local embeddings
+model (~220 MB). Studio manages its own persistence, independently of the API.
 
 `docker compose down` stops the database while preserving the `postgres_data`
 volume. Removing that volume deletes saved conversations. For manual inspection,
@@ -361,7 +360,7 @@ for the sunset review, security baseline and transition to blocking checks.
 ### 12. LLMOps & Deployment
 | Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| Week 12 | LLMOps: deploying and monitoring LLM applications |  | |
+| Week 12 | LLMOps: deploying and monitoring LLM applications | [Local support chat API](#local-support-chat-api) | |
 
 ## Interest Links 🔗
 Module | Topic | Material |
