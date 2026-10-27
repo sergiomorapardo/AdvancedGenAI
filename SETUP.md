@@ -1,12 +1,14 @@
 # Getting Started
 
-This guide walks you through setting up the AdvancedGenAI course environment so you can run the notebooks locally.
+This guide sets up the AdvancedGenAI course environment so you can run the notebooks and the LangGraph examples locally.
 
 ## Prerequisites
 
-- **Python 3.10+**
 - **git**
-- An **OpenAI** and/or **Anthropic** API key
+- **[uv](https://docs.astral.sh/uv/getting-started/installation/)**. It installs Python 3.12 (the version in `.python-version`) if you do not have it.
+- An **Anthropic** API key. Claude Haiku is the default model in the notebooks.
+- Optional: a **LangSmith** API key for tracing and evaluation, and an **OpenAI** key for the optional comparisons.
+- Optional: **Docker**, only for the examples that store conversations in PostgreSQL.
 
 ## 1. Clone the repo
 
@@ -15,27 +17,15 @@ git clone https://github.com/sergiomorapardo/AdvancedGenAI.git
 cd AdvancedGenAI
 ```
 
-## 2. Create a virtual environment
-
-**macOS / Linux**
+## 2. Install the locked dependencies
 
 ```bash
-python3 -m venv .venv && source .venv/bin/activate
+uv sync --locked
 ```
 
-**Windows**
+uv creates `.venv/` and installs exactly the versions in `uv.lock`. Do not install packages with `pip`; add new dependencies with `uv add <package>` (or `uv add --dev <package>`) so `pyproject.toml` and `uv.lock` change together.
 
-```bash
-python -m venv .venv && .venv\Scripts\activate
-```
-
-## 3. Install dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-## 4. Configure API keys
+## 3. Configure API keys
 
 Copy the example environment file and add your keys:
 
@@ -43,25 +33,38 @@ Copy the example environment file and add your keys:
 cp .env.example .env
 ```
 
-Then edit `.env` and set your credentials:
+Then edit `.env`:
 
 ```
-OPENAI_API_KEY=your-openai-key-here
 ANTHROPIC_API_KEY=your-anthropic-key-here
+OPENAI_API_KEY=your-openai-key-here      # optional
+LANGSMITH_API_KEY=your-langsmith-key-here # optional
+LANGSMITH_TRACING=false
 ```
 
 > **Note:** `.env` is gitignored and must **never** be committed — it holds your secret API keys.
 
-## 5. Launch Jupyter
+Keep `LANGSMITH_TRACING=false` unless an exercise asks you to trace: every top-level `invoke`, `batch` or `stream` creates a trace, and the free tier has a monthly limit.
+
+## 4. Launch Jupyter
 
 ```bash
-jupyter notebook
+uv run jupyter lab
 ```
 
-(or `jupyter lab`), then open `notebooks/L1-IntroToLLMs.ipynb`.
+Then open `notebooks/L1-IntroToLLMs.ipynb`. Select the kernel from `.venv` if Jupyter asks.
+
+## 5. Run the graphs in LangGraph Studio
+
+```bash
+uv run langgraph dev
+```
+
+The graphs registered in `langgraph.json` appear in Studio. Every call to a graph uses your API key.
 
 ## Troubleshooting
 
-- **Wrong Python version:** run `python --version` and make sure it's 3.10 or newer.
-- **Command/package not found:** confirm the virtual environment is activated (you should see `(.venv)` in your prompt). Re-run the activation command from step 2 if needed.
-- **API key not loaded:** double-check that `.env` exists, contains the correct keys, and that `python-dotenv` is installed (it's included in `requirements.txt`).
+- **Wrong Python version:** run `uv run python --version`; it should print 3.12.x. If not, run `uv python install` and `uv sync --locked` again.
+- **Package not found:** run commands through `uv run` (or select the `.venv` kernel in Jupyter) so they use the project environment.
+- **`uv sync --locked` fails:** the lock is out of date with `pyproject.toml`. Pull the latest `main`; do not edit `uv.lock` by hand.
+- **API key not loaded:** check that `.env` exists in the repository root and contains the keys, then restart the Jupyter kernel.

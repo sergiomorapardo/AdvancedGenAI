@@ -1,0 +1,17 @@
+{
+  "today": "2026-10-26",
+  "ticket": {
+    "code": "T-2049",
+    "customer": "C-1042",
+    "product": "debit card",
+    "charges": [
+      {"amount": 185000, "currency": "COP", "merchant": "online store"},
+      {"amount": 185000, "currency": "COP", "merchant": "online store"}
+    ],
+    "charge_date": "yesterday"
+  },
+  "rules": [
+    "If the charge date is relative (for example, 'yesterday'), report it as missing.",
+    "Do not convert amounts between currencies or round them."
+  ]
+}

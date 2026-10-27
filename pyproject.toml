@@ -8,7 +8,7 @@ authors = [
 ]
 requires-python = ">=3.12"
 dependencies = [
-    "langchain>=1.4.2",
+    "langchain[mcp]>=1.4.2",
     "langchain-core>=1.6.3",
     "langchain-community>=0.4.2",
     "langchain-openai>=1.6.2",
@@ -31,6 +31,9 @@ dependencies = [
     "langgraph-checkpoint-postgres>=3.1.2",
     "fastapi[standard]>=0.141.1",
     "psycopg[binary]>=3.3.6",
+    "fastembed>=0.9.1",
+    "rank-bm25>=0.2.2",
+    "mcp>=2.3,<3",
 ]
 
 [dependency-groups]
@@ -40,6 +43,7 @@ dev = [
     # Studio necesita langgraph-api >= 0.11 para las trazas embebidas
     "langgraph-api>=0.11.0",
     "grandalf>=0.8",
+    "ruff>=0.16.10",
 ]
 quality = [
     "bandit>=1.9.4",
@@ -48,6 +52,7 @@ quality = [
     "pip-audit>=2.10.1",
     "pre-commit>=4.6.2",
     "pre-commit-hooks>=6.0.0",
+    "pytest>=9.1.1",
     "ruff>=0.16.10",
 ]
 
