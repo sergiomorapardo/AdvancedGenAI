@@ -8,16 +8,14 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./init-scripts:/docker-entrypoint-initdb.d
     networks:
       - my_course_agent_network
 
 volumes:
   postgres_data:
-  pgadmin_data:
 
 networks:
   my_course_agent_network:
