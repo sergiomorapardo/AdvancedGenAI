@@ -9,7 +9,7 @@ from fastapi.responses import StreamingResponse
 from langchain_core.messages import HumanMessage
 from pydantic import BaseModel, Field
 
-from agents.support.agent import make_graph
+from agents.acme import make_graph
 from api.db import CheckpointerDep, lifespan
 
 app = FastAPI(lifespan=lifespan)
@@ -44,9 +44,8 @@ def stream_chat(chat_id: str, message: Message, checkpointer: CheckpointerDep):
             config={"configurable": {"thread_id": chat_id}},
             stream_mode="messages",
         ):
-            # Extraction and intent routing are internal model calls. The nested
-            # booking agent uses LangChain's "model" node for its replies.
-            if metadata.get("langgraph_node") not in {"conversation", "model"}:
+            # Only the agent's "model" node writes to the customer; tool results stay internal.
+            if metadata.get("langgraph_node") != "model":
                 continue
             if message_chunk.content:
                 payload = json.dumps({"content": message_chunk.content}, ensure_ascii=False)
