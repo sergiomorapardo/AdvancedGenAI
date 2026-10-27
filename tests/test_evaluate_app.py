@@ -266,3 +266,43 @@ def test_evaluation_example_prepares_data_without_the_model(monkeypatch):
     assert len(labeled) == 8 and {row["human"] for row in labeled} == {True, False}
     assert set(labeled[0]) == {"inputs", "outputs", "reference_outputs", "human", "note"}
     assert 0 < evaluation.MIN_AGREEMENT <= 1
+
+
+def test_agent_evaluators_read_the_trajectory(monkeypatch):
+    from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
+
+    agents = load_example("agent_evaluators", monkeypatch)
+    call = {"name": "check_credit", "args": {"customer": "C-3307", "product": "CLI"}, "id": "c1", "type": "tool_call"}
+    messages = [HumanMessage("¿Cuánto debo?"), AIMessage("", tool_calls=[call]),
+                ToolMessage('{"overdue": 2070000}', tool_call_id="c1", name="check_credit"),
+                AIMessage("Tienes 2.070.000 COP vencidos.")]
+    outputs = agents.agent_outputs(messages, route="collections")
+    assert outputs["tool_calls"] == [{"name": "check_credit", "args": call["args"]}]
+    assert outputs["executed_tools"] == ["check_credit"] and outputs["model_calls"] == 2
+
+    reference = {"tools": ["check_credit"], "calls": [{"name": "check_credit", "args": {"customer": "c-3307"}}],
+                 "forbidden_tools": ["request_disbursement"], "route": "collections", "max_model_calls": 3}
+    scores = {e(outputs, reference)["key"]: e(outputs, reference)["score"] for e in agents.AGENT_EVALUATORS}
+    assert scores == {"tools_called": True, "tool_args_match": True, "no_forbidden_tool": True,
+                      "route_correct": True, "plan_covers": None, "calls_within": True}
+
+    wrong = {"tools": ["search_documents"], "calls": [{"name": "check_credit", "args": {"customer": "C-1042"}}],
+             "forbidden_tools": ["check_credit"], "route": "credit", "max_model_calls": 1}
+    failed = {e(outputs, wrong)["key"]: e(outputs, wrong) for e in agents.AGENT_EVALUATORS}
+    assert all(failed[key]["score"] is False for key in
+               ("tools_called", "tool_args_match", "no_forbidden_tool", "route_correct", "calls_within"))
+    assert "Missing: ['search_documents']" in failed["tools_called"]["comment"]
+    assert failed["no_forbidden_tool"]["comment"] == "Executed: ['check_credit']"
+
+
+def test_agent_evaluators_handle_rejected_calls_and_plans(monkeypatch):
+    from langchain_core.messages import AIMessage, HumanMessage
+
+    agents = load_example("agent_evaluators", monkeypatch)
+    call = {"name": "request_disbursement", "args": {"amount_cop": 35_000_000}, "id": "c1", "type": "tool_call"}
+    # Rechazada por la persona: hubo llamada, pero ninguna herramienta se ejecutó.
+    outputs = agents.agent_outputs([HumanMessage("Desembolsa"), AIMessage("", tool_calls=[call]), AIMessage("No.")])
+    assert agents.no_forbidden_tool(outputs, {"forbidden_tools": ["request_disbursement"]})["score"] is True
+    plan = {"tasks": [{"policy": "collections"}, {"policy": "credit"}]}
+    result = agents.plan_covers(plan, {"plan_sources": ["collections", "fees"]})
+    assert result["score"] is False and result["comment"] == "Missing: ['fees']; Unexpected: ['credit']"
