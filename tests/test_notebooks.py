@@ -5,8 +5,13 @@ from pathlib import Path
 import typing
 import unittest
 
+import shutil
+import tempfile
+
 import dotenv
 import langchain_anthropic
+import langchain_community.embeddings
+from langchain_core.embeddings import DeterministicFakeEmbedding
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages import AIMessage
 from langchain_core.outputs import ChatGeneration, ChatResult
@@ -60,9 +65,17 @@ class FakeChatAnthropic(BaseChatModel):
         return RunnableLambda(respond)
 
 
+class FakeFastEmbedEmbeddings(DeterministicFakeEmbedding):
+    """Reemplaza a FastEmbedEmbeddings: vectores deterministas sin descargar el modelo."""
+
+    model_name: str = "fake"
+    size: int = 384
+
+
 def install():
-    """Instala el modelo simulado y anula la carga de `.env` en el kernel."""
+    """Instala los modelos simulados y anula la carga de `.env` en el kernel."""
     langchain_anthropic.ChatAnthropic = FakeChatAnthropic
+    langchain_community.embeddings.FastEmbedEmbeddings = FakeFastEmbedEmbeddings
     dotenv.load_dotenv = lambda *args, **kwargs: False
 
 
@@ -77,15 +90,22 @@ REPORT = "print(len(test_notebooks.CALLS))"
 
 
 def run_notebook(name):
-    """Ejecuta un notebook con el modelo simulado y devuelve sus llamadas al modelo."""
+    """Ejecuta un notebook con los modelos simulados y devuelve sus llamadas al modelo.
+
+    Corre en una copia temporal de notebooks/ y datasets/: los índices que el
+    notebook guarda en ../data no tocan el repositorio.
+    """
     notebook = nbformat.read(root / "notebooks" / name, as_version=4)
     notebook.cells.insert(0, nbformat.v4.new_code_cell(SETUP))
     notebook.cells.append(nbformat.v4.new_code_cell(REPORT))
     for key in ("ANTHROPIC_API_KEY", "OPENAI_API_KEY", "LANGSMITH_API_KEY"):
         os.environ.pop(key, None)
     os.environ["LANGSMITH_TRACING"] = "false"
-    NotebookClient(notebook, timeout=120, kernel_name="python3",
-                   resources={"metadata": {"path": str(root / "notebooks")}}).execute()
+    with tempfile.TemporaryDirectory() as workdir:
+        shutil.copytree(datasets, Path(workdir) / "datasets")
+        (Path(workdir) / "notebooks").mkdir()
+        NotebookClient(notebook, timeout=120, kernel_name="python3",
+                       resources={"metadata": {"path": str(Path(workdir) / "notebooks")}}).execute()
     return int(notebook.cells[-1].outputs[0]["text"])
 
 
@@ -97,6 +117,11 @@ class NotebookChecks(unittest.TestCase):
     def test_l12_runs_offline_with_the_documented_calls(self):
         self.assertEqual(run_notebook("L12-dynamic-prompting.ipynb"), 4,
                          "Actualiza el número de llamadas en la introducción de L12")
+
+    def test_embedding_notebooks_run_offline_without_model_calls(self):
+        for name in ("L3-Embeddings.ipynb", "L2-PDFSearchFAISS.ipynb"):
+            with self.subTest(notebook=name):
+                self.assertEqual(run_notebook(name), 0)
 
     def test_new_notebooks_use_haiku_5_5_without_temperature(self):
         for name in ("L1-IntroToLLMs.ipynb", "L12-dynamic-prompting.ipynb"):
