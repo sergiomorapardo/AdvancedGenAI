@@ -28,6 +28,7 @@ dependencies = [
     "python-dotenv>=1.2.3",
     "jupyter",
     "jinja2>=3.1.6",
+    "fastembed>=0.9.1",
 ]
 
 [dependency-groups]
