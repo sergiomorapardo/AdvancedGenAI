@@ -156,7 +156,7 @@ persistence independently.
 
 `docker compose down` stops the database while preserving the `postgres_data`
 volume. Removing that volume deletes saved conversations. For manual inspection,
-replace the sample thread ID in `datasets/SELECT thread_id, checkpoint_id.sql`.
+replace the sample thread ID in [`docs/sql/checkpoints.sql`](docs/sql/checkpoints.sql).
 
 ## Continuous integration
 
