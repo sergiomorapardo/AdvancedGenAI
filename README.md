@@ -264,7 +264,7 @@ for the sunset review, security baseline and transition to blocking checks.
 ### 4. RAG basics
 | Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| Week 4 | Retrieval-Augmented Generation fundamentals | [L4 - RAG chat over PDFs](./notebooks/L4-RAGHistoryChat.ipynb) | |
+| Week 4 | Retrieval-Augmented Generation fundamentals | [L4 - RAG with citations](./notebooks/L4-RAG.ipynb) | |
 
 ### 5. Advanced RAG (re-ranking, hybrid search, query transformation)
 | Week | Session | Notebooks/Presentations | Exercises |
