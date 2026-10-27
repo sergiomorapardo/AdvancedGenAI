@@ -77,6 +77,13 @@ class ApiChecks(unittest.TestCase):
             {"content": "Hola\n\nmundo"}, {"content": content_blocks}
         ])
 
+    def test_health_does_not_build_the_graph(self):
+        with patch.object(api, "make_graph") as factory:
+            response = self.client.get("/health")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {"status": "ok"})
+        factory.assert_not_called()
+
     def test_invalid_messages_are_rejected(self):
         with patch.object(api, "make_graph") as factory:
             for path in ("/chat/test", "/chat/test/stream"):

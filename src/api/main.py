@@ -15,9 +15,9 @@ from api.db import CheckpointerDep, lifespan
 app = FastAPI(lifespan=lifespan)
 
 
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
+@app.get("/health")
+def health():
+    return {"status": "ok"}
 
 
 class Message(BaseModel):
