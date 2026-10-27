@@ -17,9 +17,9 @@ from starlette.requests import Request
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 # Import the HTTP layer without constructing models or reading developer secrets.
-graph_stub = types.ModuleType("agents.support.agent")
+graph_stub = types.ModuleType("agents.acme")
 graph_stub.make_graph = Mock()
-with patch.dict(sys.modules, {"agents.support.agent": graph_stub}), patch("dotenv.load_dotenv"):
+with patch.dict(sys.modules, {"agents.acme": graph_stub}), patch("dotenv.load_dotenv"):
     api = importlib.import_module("api.main")
     db = importlib.import_module("api.db")
 
@@ -54,7 +54,7 @@ class ApiChecks(unittest.TestCase):
 
     def test_stream_frames_multiline_and_content_blocks_and_hides_internal_calls(self):
         graph = Mock()
-        content_blocks = [{"type": "text", "text": "Booking reply"}]
+        content_blocks = [{"type": "text", "text": "Respuesta del agente"}]
 
         def stream(state, config, stream_mode):
             with self.assertRaises(RuntimeError):
@@ -62,9 +62,9 @@ class ApiChecks(unittest.TestCase):
             self.assertEqual(config["configurable"]["thread_id"], "session-2")
             self.assertEqual(stream_mode, "messages")
             self.assertEqual(state["messages"][0].content, "Hola")
-            yield AIMessageChunk(content="private extraction"), {"langgraph_node": "extractor"}
-            yield AIMessageChunk(content=""), {"langgraph_node": "conversation"}
-            yield AIMessageChunk(content="Hola\n\nmundo"), {"langgraph_node": "conversation"}
+            yield AIMessageChunk(content="private tool output"), {"langgraph_node": "tools"}
+            yield AIMessageChunk(content=""), {"langgraph_node": "model"}
+            yield AIMessageChunk(content="Hola\n\nmundo"), {"langgraph_node": "model"}
             yield AIMessageChunk(content=content_blocks), {"langgraph_node": "model"}
 
         graph.stream.side_effect = stream
