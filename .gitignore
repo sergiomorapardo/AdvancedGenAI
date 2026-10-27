@@ -72,3 +72,8 @@ Thumbs.db
 .ruff_cache/
 quality-reports/
 coverage-reports/
+
+# Outputs of the Claude Code skill examples: local indexes and results downloaded from LangSmith
+.claude/skills/agentic-workflow/references/examples/indexes/
+.claude/skills/evaluate-app/references/examples/results/
+labs/*/results/
