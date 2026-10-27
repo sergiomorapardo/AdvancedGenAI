@@ -224,6 +224,9 @@ class NotebookChecks(unittest.TestCase):
         for name, calls in expected.items():
             with self.subTest(notebook=name):
                 self.assertEqual(run_notebook(name), calls)
+        # L16 lanza un trabajador por tarea del plan y L17 itera hasta aprobar: el número de llamadas varía.
+        self.assertGreater(run_notebook("L16-Orchestrator.ipynb"), 0)
+        self.assertGreater(run_notebook("L17-EvaluatorOptimizer.ipynb"), 0)
         # El agente de L22 se pausa antes de la herramienta: se comprueba que el recorrido corre.
         self.assertGreater(run_notebook("L22-HumanInTheLoop.ipynb"), 0)
         # La compuerta de L10 depende de la clasificación: solo se comprueba que corre.
@@ -238,7 +241,8 @@ class NotebookChecks(unittest.TestCase):
         for name in ("L1-IntroToLLMs.ipynb", "L11-structured_output.ipynb", "L12-dynamic-prompting.ipynb", "L4-RAG.ipynb",
                      "L18-ConversationalRAG.ipynb", "L9-Memory.ipynb",
                      "L13-tools.ipynb", "L19-ToolsAPI.ipynb", "L5-RAGEvaluation.ipynb",
-                     "L21-MCPAgent.ipynb", "L22-HumanInTheLoop.ipynb"):
+                     "L21-MCPAgent.ipynb", "L22-HumanInTheLoop.ipynb",
+                     "L16-Orchestrator.ipynb", "L17-EvaluatorOptimizer.ipynb"):
             source = "\n".join(
                 "".join(cell["source"])
                 for cell in json.loads((root / "notebooks" / name).read_text())["cells"]
