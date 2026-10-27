@@ -1,4 +1,5 @@
 import ast
+import base64
 import csv
 from datetime import date
 import json
@@ -19,6 +20,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages import AIMessage
 from langchain_core.outputs import ChatGeneration, ChatResult
 from langchain_core.runnables import RunnableLambda
+from langchain_core.runnables.graph import Graph
 from pydantic import BaseModel
 import nbformat
 from nbclient import NotebookClient
@@ -149,11 +151,16 @@ class FakeFastEmbedEmbeddings(DeterministicFakeEmbedding):
     size: int = 384
 
 
+# PNG de 1×1: draw_mermaid_png() llamaría a mermaid.ink.
+PNG = base64.b64decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGP4z8DwHwAFAAH/iZk9HQAAAABJRU5ErkJggg==")
+
+
 def install():
     """Instala los modelos y la API simulados, y anula la carga de `.env` en el kernel."""
     langchain_anthropic.ChatAnthropic = FakeChatAnthropic
     langchain_community.embeddings.FastEmbedEmbeddings = FakeFastEmbedEmbeddings
     httpx.get = fake_get
+    Graph.draw_mermaid_png = lambda self, *args, **kwargs: PNG
     dotenv.load_dotenv = lambda *args, **kwargs: False
 
 
