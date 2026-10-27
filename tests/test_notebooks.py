@@ -54,7 +54,9 @@ class FakeChatAnthropic(BaseChatModel):
 
     def _generate(self, messages, stop=None, run_manager=None, **kwargs):
         CALLS.append(messages)
-        return ChatResult(generations=[ChatGeneration(message=AIMessage(content="Respuesta simulada."))])
+        usage = {"input_tokens": len(messages), "output_tokens": 1, "total_tokens": len(messages) + 1}
+        message = AIMessage(content="Respuesta simulada.", usage_metadata=usage)
+        return ChatResult(generations=[ChatGeneration(message=message)])
 
     def with_structured_output(self, schema, **kwargs):
         def respond(prompt):
@@ -63,6 +65,10 @@ class FakeChatAnthropic(BaseChatModel):
             return schema(**values)
 
         return RunnableLambda(respond)
+
+    def bind_tools(self, tools, **kwargs):
+        # El modelo simulado nunca pide herramientas: cada turno del agente es una llamada.
+        return self
 
 
 class FakeFastEmbedEmbeddings(DeterministicFakeEmbedding):
@@ -122,13 +128,22 @@ class NotebookChecks(unittest.TestCase):
         self.assertEqual(run_notebook("L4-RAG.ipynb"), 3,
                          "Actualiza el número de llamadas en la introducción de L4")
 
+    def test_l18_runs_offline_with_the_documented_calls(self):
+        self.assertEqual(run_notebook("L18-ConversationalRAG.ipynb"), 8,
+                         "Actualiza el número de llamadas en la introducción de L18")
+
+    def test_l9_agent_runs_offline(self):
+        # El agente decide cuántas veces busca: solo se comprueba que el recorrido corre.
+        self.assertGreater(run_notebook("L9-Memory.ipynb"), 0)
+
     def test_embedding_notebooks_run_offline_without_model_calls(self):
         for name in ("L3-Embeddings.ipynb", "L2-PDFSearchFAISS.ipynb"):
             with self.subTest(notebook=name):
                 self.assertEqual(run_notebook(name), 0)
 
     def test_new_notebooks_use_haiku_5_5_without_temperature(self):
-        for name in ("L1-IntroToLLMs.ipynb", "L12-dynamic-prompting.ipynb", "L4-RAG.ipynb"):
+        for name in ("L1-IntroToLLMs.ipynb", "L12-dynamic-prompting.ipynb", "L4-RAG.ipynb",
+                     "L18-ConversationalRAG.ipynb", "L9-Memory.ipynb"):
             source = "\n".join(
                 "".join(cell["source"])
                 for cell in json.loads((root / "notebooks" / name).read_text())["cells"]
