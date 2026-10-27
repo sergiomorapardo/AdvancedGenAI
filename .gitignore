@@ -35,6 +35,8 @@ data/
 datasets/*.csv
 datasets/*.json
 datasets/*.parquet
+# Synthetic ACME case data: small and versioned
+!datasets/acme_*.csv
 *.pkl
 *.pickle
 *.h5

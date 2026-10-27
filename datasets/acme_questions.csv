@@ -1,0 +1,23 @@
+id,question,source,page,reference
+q01,¿Cuál es el monto máximo de un Crédito Express?,acme_credit_policy.pdf,1,3.000.000 COP
+q02,¿A qué plazo máximo puedo pedir un Crédito Libre Inversión?,acme_credit_policy.pdf,1,60 meses
+q03,¿Necesito un codeudor para pedir un crédito?,acme_credit_policy.pdf,1,No; ningún producto exige codeudor
+q04,¿Qué parte de mi ingreso puede comprometer la cuota del crédito?,acme_credit_policy.pdf,2,Hasta el 30 % del ingreso neto mensual sumando las demás cuotas con ACME
+q05,¿Qué puntaje necesito para un Crédito Libre Inversión?,acme_credit_policy.pdf,2,600 puntos en la escala interna de 300 a 900
+q06,"Si me rechazan el crédito, ¿cuándo puedo volver a solicitarlo?",acme_credit_policy.pdf,2,Después de 90 días
+q07,¿Pueden desembolsar mi crédito en una cuenta de otro banco?,acme_disbursement_policy.pdf,1,No; solo en la cuenta ACME del titular
+q08,"Si firmo un Crédito Libre Inversión un sábado, ¿cuándo me llega el dinero?",acme_disbursement_policy.pdf,1,El siguiente día hábil
+q09,¿Qué pasa si mi cuenta está embargada cuando van a desembolsar?,acme_disbursement_policy.pdf,2,ACME cancela el desembolso; anula el pagaré y notifica al cliente
+q10,¿Cuántos días tengo para retractarme del crédito?,acme_disbursement_policy.pdf,2,5 días hábiles devolviendo el monto total; sin intereses ni seguro
+q11,¿Cuánto cuesta el seguro de vida deudor?,acme_fees_guide.pdf,1,"0,08 % mensual sobre el saldo"
+q12,¿Puedo pagar mi cuota en efectivo?,acme_fees_guide.pdf,1,No; ACME no recibe pagos en efectivo
+q13,¿Hay penalidad por pagar el crédito antes de tiempo?,acme_fees_guide.pdf,2,No; el pago anticipado total o parcial no tiene penalidad
+q14,¿Desde cuándo me cobran el cargo de gestión de cobranza?,acme_fees_guide.pdf,2,Desde los 20 días de atraso; 15.000 COP por cuota vencida
+q15,¿Cuándo me reportan a las centrales de riesgo?,acme_collections_policy.pdf,1,Desde 61 días de mora; con aviso previo de 20 días calendario
+q16,¿Cuántas veces puedo reestructurar mi crédito?,acme_collections_policy.pdf,2,Una vez por año por crédito; con hasta 90 días de mora
+q17,"Perdí mi empleo, ¿puedo dejar de pagar capital por un tiempo?",acme_collections_policy.pdf,2,Sí; hasta 3 meses pagando solo intereses y seguro; una vez en la vida del crédito
+q18,¿ACME ofrece créditos de vehículo?,acme_credit_policy.pdf,1,No; solo Crédito Express y Crédito Libre Inversión
+q19,¿Cuál es la tasa de interés exacta del Crédito Express?,,,Sin respuesta: la tasa se informa en cada oferta
+q20,¿Puedo pedir el crédito en dólares?,acme_credit_policy.pdf,1,No; los créditos se otorgan en pesos colombianos
+q21,¿Cuál es el horario de atención de las oficinas de ACME?,,,Sin respuesta: los documentos no describen oficinas ni su horario
+q22,¿Qué beneficios tiene la tarjeta de crédito de ACME?,,,Sin respuesta: los documentos no hablan de tarjetas de crédito
