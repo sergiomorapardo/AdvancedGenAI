@@ -118,13 +118,17 @@ class NotebookChecks(unittest.TestCase):
         self.assertEqual(run_notebook("L12-dynamic-prompting.ipynb"), 4,
                          "Actualiza el número de llamadas en la introducción de L12")
 
+    def test_l4_runs_offline_with_the_documented_calls(self):
+        self.assertEqual(run_notebook("L4-RAG.ipynb"), 3,
+                         "Actualiza el número de llamadas en la introducción de L4")
+
     def test_embedding_notebooks_run_offline_without_model_calls(self):
         for name in ("L3-Embeddings.ipynb", "L2-PDFSearchFAISS.ipynb"):
             with self.subTest(notebook=name):
                 self.assertEqual(run_notebook(name), 0)
 
     def test_new_notebooks_use_haiku_5_5_without_temperature(self):
-        for name in ("L1-IntroToLLMs.ipynb", "L12-dynamic-prompting.ipynb"):
+        for name in ("L1-IntroToLLMs.ipynb", "L12-dynamic-prompting.ipynb", "L4-RAG.ipynb"):
             source = "\n".join(
                 "".join(cell["source"])
                 for cell in json.loads((root / "notebooks" / name).read_text())["cells"]
