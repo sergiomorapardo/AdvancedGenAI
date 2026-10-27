@@ -57,11 +57,11 @@ Main libraries: [LangChain](https://docs.langchain.com/oss/python/langchain/over
 
 Follow [SETUP.md](./SETUP.md) to install the environment and configure your keys.
 
-The notebooks are versioned **executed**, so their outputs can be read on GitHub before running anything. Their Mermaid diagrams are stored as PNG attachments, with the Mermaid source folded below each image. After editing a notebook, refresh both with [`tests/run_notebooks.py`](./tests/run_notebooks.py): `diagrams` renders new or changed diagrams through [mermaid.ink](https://mermaid.ink) without calling a model, and `execute` reruns the notebooks against Claude Haiku (and LangSmith in L5), writing each one only if it finishes without errors:
+The notebooks are versioned **executed**, so their outputs can be read on GitHub before running anything. Their Mermaid diagrams are stored as PNG attachments, with the Mermaid source folded below each image. After editing a notebook, refresh both with [`tests/run_notebooks.py`](./tests/run_notebooks.py): `diagrams` renders new or changed diagrams through [mermaid.ink](https://mermaid.ink) without calling a model, and `execute` reruns the notebooks against Claude Haiku (and LangSmith in L11), writing each one only if it finishes without errors:
 
 ```sh
-uv run python tests/run_notebooks.py diagrams L4-RAG.ipynb
-uv run python tests/run_notebooks.py execute L4-RAG.ipynb   # spends tokens
+uv run python tests/run_notebooks.py diagrams L08-RAG.ipynb
+uv run python tests/run_notebooks.py execute L08-RAG.ipynb   # spends tokens
 ```
 
 Git is out of the scope of this class, but please take a look at these [tutorials](https://docs.github.com/en/get-started/start-your-journey/git-and-github-learning-resources).
@@ -312,57 +312,57 @@ for the sunset review, security baseline and transition to blocking checks.
 ### 1. Intro to LLMs & LangChain
 | Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| Week 1 | LangChain step by step: messages, templates, structured output and streaming | [L1 - LangChain step by step](./notebooks/L1-IntroToLLMs.ipynb) · [L11 - Structured output](./notebooks/L11-structured_output.ipynb) | |
+| Week 1 | LangChain step by step: messages, templates, structured output and streaming | [L1 - LangChain step by step](./notebooks/L01-IntroToLLMs.ipynb) · [L2 - Structured output](./notebooks/L02-StructuredOutput.ipynb) | |
 
 ### 2. Prompt engineering & dynamic prompting (Jinja)
 | Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| Week 2 | Dynamic prompts with Jinja, schemas and traces | [L12 - Dynamic prompting](./notebooks/L12-dynamic-prompting.ipynb) | |
+| Week 2 | Dynamic prompts with Jinja, schemas and traces | [L3 - Dynamic prompting](./notebooks/L03-DynamicPrompting.ipynb) | |
 
 ### 3. AI Agents fundamentals (ReAct, tool use, function calling)
 | Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| Week 3 | Tools and a first agent, and tool calling with an external API | [L13 - Tools](./notebooks/L13-tools.ipynb) · [L19 - Tools with an external API](./notebooks/L19-ToolsAPI.ipynb) | |
+| Week 3 | Tools and a first agent, and tool calling with an external API | [L4 - Tools](./notebooks/L04-Tools.ipynb) · [L5 - Tools with an external API](./notebooks/L05-ToolsAPI.ipynb) | |
 
 ### 4. Embeddings, Vector Databases & RAG (FAISS, Chroma)
 | Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| Week 4 | Embeddings, vector stores and answers with citations | [L3 - Embeddings](./notebooks/L3-Embeddings.ipynb) · [L2 - FAISS and Chroma](./notebooks/L2-PDFSearchFAISS.ipynb) · [L4 - RAG with citations](./notebooks/L4-RAG.ipynb) | |
+| Week 4 | Embeddings, vector stores and answers with citations | [L6 - Embeddings](./notebooks/L06-Embeddings.ipynb) · [L7 - FAISS and Chroma](./notebooks/L07-VectorStores.ipynb) · [L8 - RAG with citations](./notebooks/L08-RAG.ipynb) | |
 
 ### 5. Conversational RAG & memory (query transformation, hybrid search)
 | Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| Week 5 | Follow-up questions, multi-query, retrieval metrics and per-thread memory | [L18 - Conversational RAG](./notebooks/L18-ConversationalRAG.ipynb) · [L9 - Memory with an agent](./notebooks/L9-Memory.ipynb) | |
+| Week 5 | Follow-up questions, multi-query, retrieval metrics and per-thread memory | [L9 - Conversational RAG](./notebooks/L09-ConversationalRAG.ipynb) · [L10 - Memory with an agent](./notebooks/L10-Memory.ipynb) | |
 
 ### 6. Evaluation of LLM apps (LLM-as-judge, OpenEvals)
 | Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| Week 6 | Evaluating LLM applications with LangSmith datasets, code evaluators and LLM-as-judge | [L5 - RAG evaluation](./notebooks/L5-RAGEvaluation.ipynb) | |
+| Week 6 | Evaluating LLM applications with LangSmith datasets, code evaluators and LLM-as-judge | [L11 - RAG evaluation](./notebooks/L11-RAGEvaluation.ipynb) | |
 
 ### 7. MCP - Model Context Protocol
 | Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| Week 7 | Connecting tools and data with the Model Context Protocol | [L20 - Building an MCP server](./notebooks/L20-MCPServer.ipynb) · [L21 - An agent with MCP tools](./notebooks/L21-MCPAgent.ipynb) | |
+| Week 7 | Connecting tools and data with the Model Context Protocol | [L12 - Building an MCP server](./notebooks/L12-MCPServer.ipynb) · [L13 - An agent with MCP tools](./notebooks/L13-MCPAgent.ipynb) | |
 
 ### 8. LangGraph (state, routing and parallelization)
 | Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| Week 8 | Stateful workflows with LangGraph: chaining, routing and parallelization | [L6 - LangGraph in Studio](./notebooks/L6-LangGraph.ipynb) · [L7 - Simple graph](./notebooks/L7-LangGraphSimple.ipynb) · [L8 - Messages](./notebooks/L8-LangGraphMessages.ipynb) · [L10 - Chaining](./notebooks/L10-chaining.ipynb) · [L14 - Routing](./notebooks/L14-Routing.ipynb) · [L15 - Parallelization](./notebooks/L15-Paralelization.ipynb) | |
+| Week 8 | Stateful workflows with LangGraph: chaining, routing and parallelization | [L14 - LangGraph in Studio](./notebooks/L14-LangGraphStudio.ipynb) · [L15 - Simple graph](./notebooks/L15-LangGraphSimple.ipynb) · [L16 - Messages](./notebooks/L16-LangGraphMessages.ipynb) · [L17 - Chaining](./notebooks/L17-Chaining.ipynb) · [L18 - Routing](./notebooks/L18-Routing.ipynb) · [L19 - Parallelization](./notebooks/L19-Parallelization.ipynb) | |
 
 ### 9. Human-in-the-loop
 | Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| Week 9 | Persistence, approval and resumption | [L22 - Human-in-the-loop](./notebooks/L22-HumanInTheLoop.ipynb) | |
+| Week 9 | Persistence, approval and resumption | [L20 - Human-in-the-loop](./notebooks/L20-HumanInTheLoop.ipynb) | |
 
 ### 10. Multi-agent systems (orchestrator-workers)
 | Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| Week 10 | Dynamic delegation and subgraphs | [L16 - Orchestrator](./notebooks/L16-Orchestrator.ipynb) | |
+| Week 10 | Dynamic delegation and subgraphs | [L21 - Orchestrator](./notebooks/L21-Orchestrator.ipynb) | |
 
 ### 11. Evaluator-optimizer
 | Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| Week 11 | Iterating an answer against an evaluator | [L17 - Evaluator-optimizer](./notebooks/L17-EvaluatorOptimizer.ipynb) | |
+| Week 11 | Iterating an answer against an evaluator | [L22 - Evaluator-optimizer](./notebooks/L22-EvaluatorOptimizer.ipynb) | |
 
 ### 12. LLMOps & Deployment
 | Week | Session | Notebooks/Presentations | Exercises |

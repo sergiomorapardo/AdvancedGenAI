@@ -11,7 +11,7 @@ Everything that ties the skill to this repository lives here and in `examples/pr
 ## Where things live
 
 - New servers: `labs/<server-name>/server.py`, in a feature branch and its sibling worktree (`feature/<server-name>`), never on `main`; see `AGENTS.md`.
-- The course servers: `src/agents/servers/credits.py` (the ACME credit portfolio over SQLite, elicitation of the credit) and `src/agents/servers/documents.py` (search over the ACME policies), started with `python -m agents.servers.credits` and `python -m agents.servers.documents`. They are the Spanish versions of the two examples; read them with `notebooks/L20-MCPServer.ipynb` and `notebooks/L21-MCPAgent.ipynb` when the person comes from the course.
+- The course servers: `src/agents/servers/credits.py` (the ACME credit portfolio over SQLite, elicitation of the credit) and `src/agents/servers/documents.py` (search over the ACME policies), started with `python -m agents.servers.credits` and `python -m agents.servers.documents`. They are the Spanish versions of the two examples; read them with `notebooks/L12-MCPServer.ipynb` and `notebooks/L13-MCPAgent.ipynb` when the person comes from the course.
 - Sample corpus: the synthetic ACME policies in `datasets/acme_*.pdf` (`SAMPLE_DOCUMENTS` in `project.py`). Synthetic credits: the seed of `credits_server.py`, the same figures as `datasets/acme_credits.sql`.
 - `.mcp.json` at the repo root registers the course servers for Claude Code (`acme-creditos`, `acme-documentos`). Add a team server there only when the person chose project registration; it is shared with everyone who opens the repo.
 
@@ -28,4 +28,4 @@ The servers and every check of this skill make no model calls and create no Lang
 
 ## The course behind each piece
 
-Week 7 (`L20`, `L21`) builds the course servers and checks them with the SDK client in memory and over stdio, and with an agent on `claude-haiku-5-5` over stdio and HTTP. `tests/test_servers.py` covers both course servers offline.
+Week 7 (`L12`, `L13`) builds the course servers and checks them with the SDK client in memory and over stdio, and with an agent on `claude-haiku-5-5` over stdio and HTTP. `tests/test_servers.py` covers both course servers offline.

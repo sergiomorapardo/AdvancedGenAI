@@ -52,7 +52,7 @@ Keep `LANGSMITH_TRACING=false` unless an exercise asks you to trace: every top-l
 uv run jupyter lab
 ```
 
-Then open `notebooks/L1-IntroToLLMs.ipynb`. Select the kernel from `.venv` if Jupyter asks.
+Then open `notebooks/L01-IntroToLLMs.ipynb`. Select the kernel from `.venv` if Jupyter asks.
 
 ## 5. Run the graphs in LangGraph Studio
 
