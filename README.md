@@ -289,7 +289,7 @@ for the sunset review, security baseline and transition to blocking checks.
 ### 9. Human-in-the-loop
 | Week | Session | Notebooks/Presentations | Exercises |
 | :----| :----| :------------- | :------------- |
-| Week 9 | Persistence, approval and resumption |  | |
+| Week 9 | Persistence, approval and resumption | [L22 - Human-in-the-loop](./notebooks/L22-HumanInTheLoop.ipynb) | |
 
 ### 10. Multi-agent systems (orchestrator-workers)
 | Week | Session | Notebooks/Presentations | Exercises |
