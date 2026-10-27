@@ -199,7 +199,7 @@ class NotebookChecks(unittest.TestCase):
     def test_new_notebooks_use_haiku_5_5_without_temperature(self):
         for name in ("L1-IntroToLLMs.ipynb", "L12-dynamic-prompting.ipynb", "L4-RAG.ipynb",
                      "L18-ConversationalRAG.ipynb", "L9-Memory.ipynb",
-                     "L13-tools.ipynb", "L19-ToolsAPI.ipynb"):
+                     "L13-tools.ipynb", "L19-ToolsAPI.ipynb", "L5-RAGEvaluation.ipynb"):
             source = "\n".join(
                 "".join(cell["source"])
                 for cell in json.loads((root / "notebooks" / name).read_text())["cells"]
@@ -209,6 +209,16 @@ class NotebookChecks(unittest.TestCase):
                 self.assertIn('model="claude-haiku-5-5"', source)
                 self.assertIn('thinking={"type": "disabled"}', source)
                 self.assertNotIn("temperature", source)
+
+
+    def test_langsmith_notebooks_compile_without_running(self):
+        # L5 crea datasets y experimentos en LangSmith: offline solo se comprueba que compila.
+        for name in ("L5-RAGEvaluation.ipynb",):
+            notebook = json.loads((root / "notebooks" / name).read_text())
+            for index, cell in enumerate(notebook["cells"]):
+                if cell["cell_type"] == "code":
+                    with self.subTest(notebook=name, cell=index):
+                        compile("".join(cell["source"]), f"{name}[{index}]", "exec")
 
 
 class AcmeDatasetChecks(unittest.TestCase):
@@ -225,6 +235,17 @@ class AcmeDatasetChecks(unittest.TestCase):
                     continue
                 pages = PdfReader(datasets / row["source"]).pages
                 self.assertLessEqual(int(row["page"]), len(pages))
+
+    def test_review_set_points_to_known_questions(self):
+        with open(datasets / "acme_questions.csv", encoding="utf-8") as file:
+            ids = {row["id"] for row in csv.DictReader(file)}
+        with open(datasets / "acme_review_set.csv", encoding="utf-8") as file:
+            reviews = list(csv.DictReader(file))
+        self.assertTrue(reviews)
+        for row in reviews:
+            with self.subTest(review=row["review_id"]):
+                self.assertIn(row["id"], ids)
+                self.assertIn(row["human_correct"], {"0", "1"})
 
 
 if __name__ == "__main__":
