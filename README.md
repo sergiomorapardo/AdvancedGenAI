@@ -108,6 +108,20 @@ and reuse of a nonempty vector store, without making API calls.
 From the checkout containing these files, configure `.env` as described above and
 run `uv run langgraph dev`. The `support` graph is registered in `langgraph.json`.
 
+## Claude Code: skills and hooks
+
+Opening Claude Code in this repository loads three skills from [`.claude/skills/`](.claude/skills/), built on the same ACME case as the notebooks:
+
+- [`/agentic-workflow`](.claude/skills/agentic-workflow/SKILL.md): designs and builds an LLM app step by step (chain, Jinja prompt, tools, RAG with citations, conversational memory, MCP tools) and runs it once only after approval.
+- [`/evaluate-app`](.claude/skills/evaluate-app/SKILL.md): builds a LangSmith dataset, code evaluators and a calibrated judge, and compares two configurations of an existing app.
+- [`/mcp-server`](.claude/skills/mcp-server/SKILL.md): builds an MCP server with the official SDK and reviews third-party servers before connecting them.
+
+Hooks registered in [`.claude/settings.json`](.claude/settings.json) run after Claude edits a file, without calling a model: `check_jinja` renders `.jinja` templates with `StrictUndefined`, `check_app` lints apps under `labs/`, and `check_mcp` loads and reviews MCP servers. The same settings ask before running `labs/` or the skill examples, which spend tokens. [`.mcp.json`](.mcp.json) registers the course MCP servers. Run the offline tests of the skills with:
+
+```sh
+uv run --group quality python -m pytest -q tests/test_agentic_workflow.py tests/test_evaluate_app.py tests/test_mcp_server.py
+```
+
 ## Continuous integration
 
 GitHub Actions runs `.github/workflows/ci.yml` on pull requests and pushes to
