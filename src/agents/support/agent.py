@@ -1,5 +1,4 @@
-from typing import TypedDict
-
+from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.graph import START, END, StateGraph
 from langgraph.prebuilt import ToolNode, tools_condition
 
@@ -9,8 +8,7 @@ from agents.support.nodes.conversation.tools import search_docs
 from agents.support.state import State
 
 
-def make_graph(config: TypedDict):
-    checkpointer = config.get("checkpointer", None)
+def make_graph(*, checkpointer: BaseCheckpointSaver | None = None):
     builder = StateGraph(State)
     builder.add_node("extractor", extractor)
     builder.add_node("conversation", conversation)
@@ -24,5 +22,8 @@ def make_graph(config: TypedDict):
     builder.add_edge("conversation", END)
     builder.add_edge("booking", END)
 
-    agent = builder.compile(checkpointer=checkpointer)
-    return agent
+    return builder.compile(checkpointer=checkpointer)
+
+
+# Studio supplies its own persistence; direct callers can inject a checkpointer.
+agent = make_graph()
