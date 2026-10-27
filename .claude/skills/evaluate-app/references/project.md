@@ -29,4 +29,4 @@ Everything that ties the skill to this repository lives here and in `examples/pr
 
 ## The course behind it
 
-Distilled from `notebooks/L5-RAGEvaluation.ipynb` (week 6), which compares the cosine and RRF retrievers with 38 calls and 11 traces on five questions. The script compares `k=3` with `k=5` to stay short, and stops if the judge agrees with the person less than 75 %. LangSmith stores feedback late and returns boolean scores as 1.0/0.0, so `results.py` waits for every score and compares with `None`. Agent evaluation (trajectories, tool calls) and production monitoring are not in the skill yet.
+Distilled from `notebooks/L11-RAGEvaluation.ipynb` (week 6), which compares the cosine and RRF retrievers with 38 calls and 11 traces on five questions. The script compares `k=3` with `k=5` to stay short, and stops if the judge agrees with the person less than 75 %. LangSmith stores feedback late and returns boolean scores as 1.0/0.0, so `results.py` waits for every score and compares with `None`. Agent evaluation (trajectories, tool calls) and production monitoring are not in the skill yet.

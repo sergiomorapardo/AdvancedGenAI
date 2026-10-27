@@ -196,60 +196,60 @@ def run_notebook(name):
 
 class NotebookChecks(unittest.TestCase):
     def test_l1_runs_offline_with_the_documented_calls(self):
-        self.assertEqual(run_notebook("L1-IntroToLLMs.ipynb"), 18,
+        self.assertEqual(run_notebook("L01-IntroToLLMs.ipynb"), 18,
                          "Actualiza el número de llamadas en la introducción de L1")
 
     def test_l12_runs_offline_with_the_documented_calls(self):
-        self.assertEqual(run_notebook("L12-dynamic-prompting.ipynb"), 4,
-                         "Actualiza el número de llamadas en la introducción de L12")
+        self.assertEqual(run_notebook("L03-DynamicPrompting.ipynb"), 4,
+                         "Actualiza el número de llamadas en la introducción de L3")
 
     def test_l4_runs_offline_with_the_documented_calls(self):
-        self.assertEqual(run_notebook("L4-RAG.ipynb"), 3,
-                         "Actualiza el número de llamadas en la introducción de L4")
+        self.assertEqual(run_notebook("L08-RAG.ipynb"), 3,
+                         "Actualiza el número de llamadas en la introducción de L8")
 
     def test_l11_runs_offline_with_the_documented_calls(self):
-        self.assertEqual(run_notebook("L11-structured_output.ipynb"), 8,
-                         "Actualiza el número de llamadas en la introducción de L11")
+        self.assertEqual(run_notebook("L02-StructuredOutput.ipynb"), 8,
+                         "Actualiza el número de llamadas en la introducción de L2")
 
     def test_l18_runs_offline_with_the_documented_calls(self):
-        self.assertEqual(run_notebook("L18-ConversationalRAG.ipynb"), 8,
-                         "Actualiza el número de llamadas en la introducción de L18")
+        self.assertEqual(run_notebook("L09-ConversationalRAG.ipynb"), 8,
+                         "Actualiza el número de llamadas en la introducción de L9")
 
     def test_l9_agent_runs_offline(self):
         # El agente decide cuántas veces busca: solo se comprueba que el recorrido corre.
-        self.assertGreater(run_notebook("L9-Memory.ipynb"), 0)
+        self.assertGreater(run_notebook("L10-Memory.ipynb"), 0)
 
     def test_tool_notebooks_run_offline(self):
         # Los agentes deciden cuántas veces llamar al modelo: se comprueba que el recorrido corre.
-        for name in ("L13-tools.ipynb", "L19-ToolsAPI.ipynb"):
+        for name in ("L04-Tools.ipynb", "L05-ToolsAPI.ipynb"):
             with self.subTest(notebook=name):
                 self.assertGreater(run_notebook(name), 0)
 
     def test_langgraph_notebooks_run_offline(self):
-        expected = {"L7-LangGraphSimple.ipynb": 0, "L8-LangGraphMessages.ipynb": 2,
-                    "L14-Routing.ipynb": 6, "L15-Paralelization.ipynb": 3}
+        expected = {"L15-LangGraphSimple.ipynb": 0, "L16-LangGraphMessages.ipynb": 2,
+                    "L18-Routing.ipynb": 6, "L19-Parallelization.ipynb": 3}
         for name, calls in expected.items():
             with self.subTest(notebook=name):
                 self.assertEqual(run_notebook(name), calls)
-        # L16 lanza un trabajador por tarea del plan y L17 itera hasta aprobar: el número de llamadas varía.
-        self.assertGreater(run_notebook("L16-Orchestrator.ipynb"), 0)
-        self.assertGreater(run_notebook("L17-EvaluatorOptimizer.ipynb"), 0)
-        # El agente de L22 se pausa antes de la herramienta: se comprueba que el recorrido corre.
-        self.assertGreater(run_notebook("L22-HumanInTheLoop.ipynb"), 0)
-        # La compuerta de L10 depende de la clasificación: solo se comprueba que corre.
-        self.assertGreater(run_notebook("L10-chaining.ipynb"), 0)
+        # L21 lanza un trabajador por tarea del plan y L22 itera hasta aprobar: el número de llamadas varía.
+        self.assertGreater(run_notebook("L21-Orchestrator.ipynb"), 0)
+        self.assertGreater(run_notebook("L22-EvaluatorOptimizer.ipynb"), 0)
+        # El agente de L20 se pausa antes de la herramienta: se comprueba que el recorrido corre.
+        self.assertGreater(run_notebook("L20-HumanInTheLoop.ipynb"), 0)
+        # La compuerta de L17 depende de la clasificación: solo se comprueba que corre.
+        self.assertGreater(run_notebook("L17-Chaining.ipynb"), 0)
 
     def test_embedding_notebooks_run_offline_without_model_calls(self):
-        for name in ("L3-Embeddings.ipynb", "L2-PDFSearchFAISS.ipynb"):
+        for name in ("L06-Embeddings.ipynb", "L07-VectorStores.ipynb"):
             with self.subTest(notebook=name):
                 self.assertEqual(run_notebook(name), 0)
 
     def test_new_notebooks_use_haiku_5_5_without_temperature(self):
-        for name in ("L1-IntroToLLMs.ipynb", "L11-structured_output.ipynb", "L12-dynamic-prompting.ipynb", "L4-RAG.ipynb",
-                     "L18-ConversationalRAG.ipynb", "L9-Memory.ipynb",
-                     "L13-tools.ipynb", "L19-ToolsAPI.ipynb", "L5-RAGEvaluation.ipynb",
-                     "L21-MCPAgent.ipynb", "L22-HumanInTheLoop.ipynb",
-                     "L16-Orchestrator.ipynb", "L17-EvaluatorOptimizer.ipynb"):
+        for name in ("L01-IntroToLLMs.ipynb", "L02-StructuredOutput.ipynb", "L03-DynamicPrompting.ipynb", "L08-RAG.ipynb",
+                     "L09-ConversationalRAG.ipynb", "L10-Memory.ipynb",
+                     "L04-Tools.ipynb", "L05-ToolsAPI.ipynb", "L11-RAGEvaluation.ipynb",
+                     "L13-MCPAgent.ipynb", "L20-HumanInTheLoop.ipynb",
+                     "L21-Orchestrator.ipynb", "L22-EvaluatorOptimizer.ipynb"):
             source = "\n".join(
                 "".join(cell["source"])
                 for cell in json.loads((root / "notebooks" / name).read_text())["cells"]
@@ -262,9 +262,9 @@ class NotebookChecks(unittest.TestCase):
 
 
     def test_langsmith_notebooks_compile_without_running(self):
-        # L5 escribe en LangSmith y L20–L21 arrancan servidores (probados en test_servers.py):
+        # L11 escribe en LangSmith y L12–L13 arrancan servidores (probados en test_servers.py):
         # offline solo se comprueba que compilan.
-        for name in ("L5-RAGEvaluation.ipynb", "L20-MCPServer.ipynb", "L21-MCPAgent.ipynb"):
+        for name in ("L11-RAGEvaluation.ipynb", "L12-MCPServer.ipynb", "L13-MCPAgent.ipynb"):
             notebook = json.loads((root / "notebooks" / name).read_text())
             for index, cell in enumerate(notebook["cells"]):
                 if cell["cell_type"] == "code":

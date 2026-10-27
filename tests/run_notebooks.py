@@ -6,12 +6,12 @@ y conserva el código Mermaid plegado debajo; volver a correrlo solo descarga lo
 diagramas nuevos o modificados. No llama a ningún modelo.
 
 `execute` corre los notebooks contra Claude Haiku y LangSmith tal como están, y solo
-escribe un notebook si terminó sin errores. Cuesta llamadas reales: L5 además crea
+escribe un notebook si terminó sin errores. Cuesta llamadas reales: L11 además crea
 trazas y experimentos en LangSmith. Quita los avisos de Python, la metadata de tiempos
 y las rutas del equipo, y renumera las celdas.
 
-    uv run python tests/run_notebooks.py diagrams [L4-RAG.ipynb ...]
-    uv run python tests/run_notebooks.py execute [L4-RAG.ipynb ...]
+    uv run python tests/run_notebooks.py diagrams [L08-RAG.ipynb ...]
+    uv run python tests/run_notebooks.py execute [L08-RAG.ipynb ...]
 """
 
 import argparse
@@ -35,7 +35,7 @@ RENDERED = re.compile(
     r"<details><summary>Código Mermaid</summary>\n\n(```mermaid\n.*?\n```)\n\n</details>",
     re.S,
 )
-# Precio de Claude Haiku por millón de tokens (US$), el mismo de L5.
+# Precio de Claude Haiku por millón de tokens (US$), el mismo de L11.
 PRICE_PER_MILLION = {"input": 0.10, "output": 0.50}
 SECRETS = re.compile(r"sk-ant-|lsv2_|sk-proj-")
 
@@ -146,7 +146,7 @@ def main():
         for path in paths:
             print(f"{path.name}: {diagrams(path)} diagramas renderizados")
         return
-    os.environ["LANGSMITH_TRACING"] = "false"  # solo L5 traza, con tracing_context
+    os.environ["LANGSMITH_TRACING"] = "false"  # solo L11 traza, con tracing_context
     total = {"input": 0, "output": 0}
     for path in paths:
         usage = execute(path)

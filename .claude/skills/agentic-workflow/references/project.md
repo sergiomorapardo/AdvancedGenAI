@@ -33,14 +33,14 @@ The examples follow the course notebooks, which use the same ACME case and model
 
 | Piece | Week · notebook |
 |---|---|
-| `chain.py` | 1 · L1, L11 |
-| `jinja_prompt.py` | 2 · L12 |
-| `tools_agent.py`, `api_tool.py` | 3 · L13, L19 |
-| `rag.py`, `vector_store.py` | 4 · L3, L2, L4 |
-| `conversational_rag.py`, `memory_agent.py` | 5 · L18, L9 |
-| Evaluation (evaluate-app skill) | 6 · L5 |
-| `mcp_agent.py` (servers: mcp-server skill) | 7 · L20, L21 |
-| LangGraph routing and parallel branches | 8 · L7, L8, L10, L14, L15 (not yet in the skill) |
-| Human approval | 9 · L22 (not yet in the skill) |
-| Orchestrator-workers and subgraphs | 10 · L16 (not yet in the skill) |
-| Evaluator-optimizer | 11 · L17 (not yet in the skill) |
+| `chain.py` | 1 · L1, L2 |
+| `jinja_prompt.py` | 2 · L3 |
+| `tools_agent.py`, `api_tool.py` | 3 · L4, L5 |
+| `rag.py`, `vector_store.py` | 4 · L6, L7, L8 |
+| `conversational_rag.py`, `memory_agent.py` | 5 · L9, L10 |
+| Evaluation (evaluate-app skill) | 6 · L11 |
+| `mcp_agent.py` (servers: mcp-server skill) | 7 · L12, L13 |
+| LangGraph routing and parallel branches | 8 · L15, L16, L17, L18, L19 (not yet in the skill) |
+| Human approval | 9 · L20 (not yet in the skill) |
+| Orchestrator-workers and subgraphs | 10 · L21 (not yet in the skill) |
+| Evaluator-optimizer | 11 · L22 (not yet in the skill) |
