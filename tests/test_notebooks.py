@@ -66,6 +66,7 @@ TOOL_ARGS = {
     "check_restructuring": {"customer": "C-3307"},
     "get_exchange_rate": {"date": date.today().isoformat()},
     "search_documents": {"query": "¿Se puede reestructurar un crédito con mora?"},
+    "request_disbursement": {"customer": "C-4415", "amount_cop": 25_000_000},
 }
 
 
@@ -223,6 +224,8 @@ class NotebookChecks(unittest.TestCase):
         for name, calls in expected.items():
             with self.subTest(notebook=name):
                 self.assertEqual(run_notebook(name), calls)
+        # El agente de L22 se pausa antes de la herramienta: se comprueba que el recorrido corre.
+        self.assertGreater(run_notebook("L22-HumanInTheLoop.ipynb"), 0)
         # La compuerta de L10 depende de la clasificación: solo se comprueba que corre.
         self.assertGreater(run_notebook("L10-chaining.ipynb"), 0)
 
@@ -235,7 +238,7 @@ class NotebookChecks(unittest.TestCase):
         for name in ("L1-IntroToLLMs.ipynb", "L11-structured_output.ipynb", "L12-dynamic-prompting.ipynb", "L4-RAG.ipynb",
                      "L18-ConversationalRAG.ipynb", "L9-Memory.ipynb",
                      "L13-tools.ipynb", "L19-ToolsAPI.ipynb", "L5-RAGEvaluation.ipynb",
-                     "L21-MCPAgent.ipynb"):
+                     "L21-MCPAgent.ipynb", "L22-HumanInTheLoop.ipynb"):
             source = "\n".join(
                 "".join(cell["source"])
                 for cell in json.loads((root / "notebooks" / name).read_text())["cells"]
