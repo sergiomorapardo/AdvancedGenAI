@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "acme-creditos": {
+      "command": "uv",
+      "args": ["run", "--locked", "python", "-m", "agents.servers.credits"]
+    },
+    "acme-documentos": {
+      "command": "uv",
+      "args": ["run", "--locked", "python", "-m", "agents.servers.documents"]
+    }
+  }
+}
