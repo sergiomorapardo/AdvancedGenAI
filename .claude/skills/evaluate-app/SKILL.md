@@ -1,6 +1,6 @@
 ---
 name: evaluate-app
-description: Measures an LLM app that already exists, such as a RAG app, a chain or an agent, so that two versions can be compared with evidence. Builds a LangSmith dataset with references written by people, helps write code evaluators and LLM judges from rubrics, calibrates the judge against human labels, runs one experiment per configuration only after approval, then downloads runs, traces and scores and writes a report with the interpretation. Use when someone asks to evaluate, test, benchmark or compare an LLM app or two prompts, retrievers or models ("is the new version better?", "build a dataset", "write an evaluator", "LLM-as-a-judge", "OpenEvals", "LangSmith experiment", "analyze these experiments", /evaluate-app). Not for designing or building the app itself (use agentic-workflow) or for monitoring production traffic.
+description: Measures an LLM app that already exists, such as a RAG app, a chain, an agent or a LangGraph workflow, so that two versions can be compared with evidence. Builds a LangSmith dataset with references written by people, helps write code evaluators (including tool calls, arguments, routes and call budgets of agents) and LLM judges from rubrics, calibrates the judge against human labels, runs one experiment per configuration only after approval, then downloads runs, traces and scores and writes a report with the interpretation. Use when someone asks to evaluate, test, benchmark or compare an LLM app or two prompts, retrievers or models ("is the new version better?", "build a dataset", "write an evaluator", "LLM-as-a-judge", "OpenEvals", "LangSmith experiment", "analyze these experiments", /evaluate-app). Not for designing or building the app itself (use agentic-workflow) or for monitoring production traffic.
 ---
 
 # Evaluate an LLM app
@@ -33,6 +33,7 @@ Copy this checklist into your answer and tick it as you go:
 | Model, credentials, LangSmith budget and naming, sample data | `references/project.md` |
 | What to compare, where the references come from, how many questions | `references/design.md` |
 | Writing a code evaluator or a judge rubric, calibrating it | `references/evaluators.md` |
+| Evaluating an agent or a graph: tool calls, arguments, routes, plans, forbidden actions, call budget | `references/agents.md` |
 | Downloading runs and traces, the report, interpreting the experiments | `references/results.md` |
 | Offline checks and the paid run | `references/validation.md` |
 | An error symptom | `references/gotchas.md` |
@@ -42,6 +43,7 @@ Copy this checklist into your answer and tick it as you go:
 | File | What it gives |
 |---|---|
 | `references/examples/evaluators.py` | Code evaluators (`retrieval_hit`, `citations_ok`, `figures_match`), `make_judge` to turn a rubric into an evaluator, `build_judge_model` and `calibrate` |
+| `references/examples/agent_evaluators.py` | Code evaluators of what an agent or graph did (`tools_called`, `tool_args_match`, `no_forbidden_tool`, `route_correct`, `plan_covers`, `calls_within`) and `agent_outputs` to build their input from the messages |
 | `references/examples/results.py` | Download the runs, traces and scores of experiments, compare them question by question with a sign test, diagnose retrieval vs generation and write `report.md` |
 | `references/examples/evaluation.py` | The whole run on a RAG app: dataset created once, calibration that stops the run if the judge is not trusted, two experiments, and the report at the end |
 | `references/examples/project.py` | The only file that knows the project: model, credentials, prices, sample data |

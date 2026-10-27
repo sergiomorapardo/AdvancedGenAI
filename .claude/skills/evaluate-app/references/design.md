@@ -22,6 +22,7 @@ Ask with **AskUserQuestion**: one question, two to four options, the recommended
 | Is every claim in the fragments? | Judge with the context, no reference needed | Catches made-up figures even when the reference is missing |
 | Is the judge trustworthy? | Agreement with answers labeled by a person | The judge is another AI app: it can prefer long answers or answers like its own |
 | Is it fast and cheap enough? | Latency and tokens of each answer | A small quality gain can cost more than it is worth |
+| Did the agent use the right tools, route or plan? | Code over the trajectory (`references/agents.md`) | An answer can be right by luck; the trajectory explains why it is wrong |
 
 ## Close the design with a plan
 
