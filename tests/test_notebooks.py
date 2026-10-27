@@ -1,3 +1,4 @@
+import ast
 import csv
 from datetime import date
 import json
@@ -199,7 +200,8 @@ class NotebookChecks(unittest.TestCase):
     def test_new_notebooks_use_haiku_5_5_without_temperature(self):
         for name in ("L1-IntroToLLMs.ipynb", "L12-dynamic-prompting.ipynb", "L4-RAG.ipynb",
                      "L18-ConversationalRAG.ipynb", "L9-Memory.ipynb",
-                     "L13-tools.ipynb", "L19-ToolsAPI.ipynb", "L5-RAGEvaluation.ipynb"):
+                     "L13-tools.ipynb", "L19-ToolsAPI.ipynb", "L5-RAGEvaluation.ipynb",
+                     "L21-MCPAgent.ipynb"):
             source = "\n".join(
                 "".join(cell["source"])
                 for cell in json.loads((root / "notebooks" / name).read_text())["cells"]
@@ -212,13 +214,16 @@ class NotebookChecks(unittest.TestCase):
 
 
     def test_langsmith_notebooks_compile_without_running(self):
-        # L5 crea datasets y experimentos en LangSmith: offline solo se comprueba que compila.
-        for name in ("L5-RAGEvaluation.ipynb",):
+        # L5 escribe en LangSmith y L20–L21 arrancan servidores (probados en test_servers.py):
+        # offline solo se comprueba que compilan.
+        for name in ("L5-RAGEvaluation.ipynb", "L20-MCPServer.ipynb", "L21-MCPAgent.ipynb"):
             notebook = json.loads((root / "notebooks" / name).read_text())
             for index, cell in enumerate(notebook["cells"]):
                 if cell["cell_type"] == "code":
                     with self.subTest(notebook=name, cell=index):
-                        compile("".join(cell["source"]), f"{name}[{index}]", "exec")
+                        # Jupyter acepta await en el nivel superior, como IPython.
+                        compile("".join(cell["source"]), f"{name}[{index}]", "exec",
+                                flags=ast.PyCF_ALLOW_TOP_LEVEL_AWAIT)
 
 
 class AcmeDatasetChecks(unittest.TestCase):
