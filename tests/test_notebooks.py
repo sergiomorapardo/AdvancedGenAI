@@ -36,8 +36,12 @@ class NotebookChecks(unittest.TestCase):
         self.assertEqual(run_notebook("L1-IntroToLLMs.ipynb"), 18,
                          "Actualiza el número de llamadas en la introducción de L1")
 
+    def test_l12_runs_offline_with_the_documented_calls(self):
+        self.assertEqual(run_notebook("L12-dynamic-prompting.ipynb"), 4,
+                         "Actualiza el número de llamadas en la introducción de L12")
+
     def test_new_notebooks_use_haiku_5_5_without_temperature(self):
-        for name in ("L1-IntroToLLMs.ipynb",):
+        for name in ("L1-IntroToLLMs.ipynb", "L12-dynamic-prompting.ipynb"):
             source = "\n".join(
                 "".join(cell["source"])
                 for cell in json.loads((root / "notebooks" / name).read_text())["cells"]
