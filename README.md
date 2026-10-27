@@ -57,6 +57,13 @@ Main libraries: [LangChain](https://docs.langchain.com/oss/python/langchain/over
 
 Follow [SETUP.md](./SETUP.md) to install the environment and configure your keys.
 
+The notebooks are versioned **executed**, so their outputs can be read on GitHub before running anything. Their Mermaid diagrams are stored as PNG attachments, with the Mermaid source folded below each image. After editing a notebook, refresh both with [`tests/run_notebooks.py`](./tests/run_notebooks.py): `diagrams` renders new or changed diagrams through [mermaid.ink](https://mermaid.ink) without calling a model, and `execute` reruns the notebooks against Claude Haiku (and LangSmith in L5), writing each one only if it finishes without errors:
+
+```sh
+uv run python tests/run_notebooks.py diagrams L4-RAG.ipynb
+uv run python tests/run_notebooks.py execute L4-RAG.ipynb   # spends tokens
+```
+
 Git is out of the scope of this class, but please take a look at these [tutorials](https://docs.github.com/en/get-started/start-your-journey/git-and-github-learning-resources).
 
 ## Agent examples: single-file and modular
