@@ -24,7 +24,7 @@ Everything that ties the skill to this repository lives here and in `examples/pr
 
 ## Budget
 
-The servers and every check of this skill make no model calls and create no LangSmith traces. An agent that uses the servers does: that run belongs to agentic-workflow and needs its own approval.
+The servers and every check of this skill make no model calls and create no LangSmith traces. An agent that uses the servers does: that run belongs to llm-tools and needs its own approval.
 
 ## The course behind each piece
 

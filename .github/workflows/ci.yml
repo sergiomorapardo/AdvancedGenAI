@@ -73,8 +73,9 @@ jobs:
         # The skills keep their pytest tests (fixtures and parametrize); no model calls, no traces.
         run: >-
           uv run --no-sync python -m pytest -q
-          tests/test_agentic_workflow.py tests/test_evaluate_app.py tests/test_mcp_server.py
-          tests/test_agent_patterns.py tests/test_deploy_app.py
+          tests/test_skills.py tests/test_llm_prompts.py tests/test_llm_tools.py tests/test_llm_rag.py
+          tests/test_agentic_memory.py tests/test_agentic_patterns.py tests/test_eval_experiments.py
+          tests/test_mcp_server.py tests/test_ops_traces.py tests/test_ops_deploy.py
 
       - name: Generate coverage reports
         id: coverage

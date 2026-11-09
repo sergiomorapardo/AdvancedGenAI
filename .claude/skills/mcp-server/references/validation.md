@@ -23,10 +23,10 @@ Only where the person chose in the wizard:
 
 - **Project**: add an entry to `.mcp.json` at the repo root with `{"command": "uv", "args": ["run", "python", "<path>/server.py"]}` (or `{"type": "http", "url": "..."}`). Validate the JSON. Claude Code asks every person to approve project servers; `/mcp` shows their status and tools.
 - **Local**: give the person the `claude mcp add --scope local <name> -- uv run python <path>/server.py` command to run themselves.
-- **An agent**: hand over to agentic-workflow with the `mcpServers` entry.
+- **An agent**: hand over to llm-tools with the `mcpServers` entry.
 
 Optional, if Node 22.19 or newer is installed: `npx @modelcontextprotocol/inspector --cli --config .mcp.json --server <name> --method tools/list` lists the tools from the terminal, and without `--cli` it opens the web view to try each tool and answer elicitations by hand.
 
 ## 3. Delivery
 
-Answer with: the file paths, the list of tools, resources and prompts with one real result each, the review report, the commands for stdio and HTTP, where it was registered and how to see it (`/mcp`), and the final blueprint. State that the server makes no model calls and that an agent using it does. Suggest a single next step: connecting it to an agent with agentic-workflow, or a second client.
+Answer with: the file paths, the list of tools, resources and prompts with one real result each, the review report, the commands for stdio and HTTP, where it was registered and how to see it (`/mcp`), and the final blueprint. State that the server makes no model calls and that an agent using it does. Suggest a single next step: connecting it to an agent with llm-tools, or a second client.

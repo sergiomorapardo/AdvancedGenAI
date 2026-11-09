@@ -74,6 +74,7 @@ quality-reports/
 coverage-reports/
 
 # Outputs of the Claude Code skill examples: local indexes and results downloaded from LangSmith
-.claude/skills/agentic-workflow/references/examples/indexes/
-.claude/skills/evaluate-app/references/examples/results/
+.claude/skills/llm-rag/references/examples/indexes/
+.claude/skills/eval-experiments/references/examples/results/
+.claude/skills/ops-traces/references/examples/results/
 labs/*/results/
