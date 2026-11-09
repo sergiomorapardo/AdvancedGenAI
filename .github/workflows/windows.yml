@@ -1,0 +1,46 @@
+# Checks on real Windows that the MCP servers start over stdio from Jupyter (L12 and L13).
+# No model calls and no traces: the tests use local servers only.
+name: Windows
+
+on:
+  pull_request:
+    paths:
+      - "src/agents/servers/**"
+      - "notebooks/L12-MCPServer.ipynb"
+      - "notebooks/L13-MCPAgent.ipynb"
+      - "tests/test_servers.py"
+      - "pyproject.toml"
+      - "uv.lock"
+      - ".github/workflows/windows.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mcp-stdio:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    env:
+      LANGSMITH_TRACING: "false"
+      LANGCHAIN_TRACING_V2: "false"
+    steps:
+      - name: Check out code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+        with:
+          version: "0.12.10"
+          enable-cache: true
+
+      - name: Install Python from .python-version
+        run: uv python install
+
+      - name: Install locked dependencies
+        run: uv sync --locked --no-dev --group quality
+
+      - name: Run the MCP server tests
+        run: uv run --no-sync python -m unittest -v tests.test_servers
