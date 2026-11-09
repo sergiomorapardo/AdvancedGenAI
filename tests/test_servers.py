@@ -6,6 +6,7 @@ import sqlite3
 import sys
 import tempfile
 import unittest
+from contextlib import closing
 from unittest.mock import patch
 
 from langchain_core.embeddings import DeterministicFakeEmbedding
@@ -26,7 +27,7 @@ class CreditsServerChecks(unittest.TestCase):
         # Base temporal: las pruebas no tocan data/ del repositorio.
         cls.workdir = tempfile.TemporaryDirectory()
         database = Path(cls.workdir.name) / "credits.db"
-        with sqlite3.connect(database) as setup:
+        with closing(sqlite3.connect(database)) as setup, setup:
             setup.executescript((root / "datasets" / "acme_credits.sql").read_text(encoding="utf-8"))
         with patch.dict(os.environ, {"CREDITS_DB": str(database)}):
             cls.server = importlib.reload(importlib.import_module("agents.servers.credits"))
@@ -78,8 +79,8 @@ class CreditsServerChecks(unittest.TestCase):
         self.assertEqual([row["code"] for row in everything.structured_content["result"]], ["CEX", "CLI"])
 
     def test_connection_cannot_write(self):
-        with self.assertRaises(sqlite3.OperationalError):
-            self.server.connect().execute("DELETE FROM credits")
+        with closing(self.server.connect()) as connection, self.assertRaises(sqlite3.OperationalError):
+            connection.execute("DELETE FROM credits")
 
 
 class DocumentsServerChecks(unittest.TestCase):
@@ -164,7 +165,7 @@ class WindowsKernelStderrChecks(unittest.TestCase):
         workdir = tempfile.TemporaryDirectory()
         self.addCleanup(workdir.cleanup)
         database = Path(workdir.name) / "credits.db"
-        with sqlite3.connect(database) as setup:
+        with closing(sqlite3.connect(database)) as setup, setup:
             setup.executescript((root / "datasets" / "acme_credits.sql").read_text(encoding="utf-8"))
         env = {**os.environ, "CREDITS_DB": str(database), "PYTHONPATH": str(root / "src")}
         command = [sys.executable, "-m", "agents.servers.credits"]
