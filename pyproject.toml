@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [
     { name = "Sergio Mora", email = "sergioa.mora@javeriana.edu.co" }
 ]
-requires-python = ">=3.12"
+requires-python = ">=3.12,<3.14"
 dependencies = [
     "langchain[mcp]>=1.4.2",
     "langchain-core>=1.6.3",
@@ -20,8 +20,8 @@ dependencies = [
     "openai>=3.13.0",
     "anthropic>=1.6.0",
     "chromadb>=1.5.9",
-    "faiss-cpu>=1.15.0",
-    "sentence-transformers",
+    # Desde 1.14 no hay wheel para Mac Intel con macOS 14; 1.13.2 cubre Windows, Linux y macOS 14+.
+    "faiss-cpu>=1.13.2,<1.14",
     "tiktoken>=0.14.0",
     "pypdf>=6.18.1",
     "pandas>=3.0.5",
@@ -55,6 +55,15 @@ quality = [
     "pre-commit-hooks>=6.0.0",
     "pytest>=9.1.1",
     "ruff>=0.16.10",
+]
+
+[tool.uv]
+# El lock debe tener wheels para los equipos de los estudiantes; si alguno queda sin wheel, uv lock falla.
+required-environments = [
+    "sys_platform == 'win32' and platform_machine == 'AMD64'",
+    "sys_platform == 'darwin' and platform_machine == 'x86_64'",
+    "sys_platform == 'darwin' and platform_machine == 'arm64'",
+    "sys_platform == 'linux' and platform_machine == 'x86_64'",
 ]
 
 [tool.uv.build-backend]

@@ -13,6 +13,7 @@ import re
 import sqlite3
 import sys
 import unicodedata
+from contextlib import closing
 from pathlib import Path
 from typing import Annotated, Literal
 
@@ -46,7 +47,7 @@ def unaccent(text: str) -> str:
 def connect() -> sqlite3.Connection:
     if DB == DEFAULT_DB and not DB.exists():
         DB.parent.mkdir(exist_ok=True)
-        with sqlite3.connect(DB) as setup:
+        with closing(sqlite3.connect(DB)) as setup, setup:
             setup.executescript((ROOT / "datasets" / "acme_credits.sql").read_text(encoding="utf-8"))
     # mode=ro: la conexión no puede escribir, aunque alguien cambie una consulta.
     connection = sqlite3.connect(f"{DB.resolve().as_uri()}?mode=ro", uri=True)
@@ -68,7 +69,8 @@ def find_credits(customer: str, product: str) -> list[dict]:
         WHERE customer = ? AND (? = '' OR unaccent(code || ' ' || product) LIKE ?)
         ORDER BY code
     """
-    with connect() as connection:
+    # closing: «with connection» solo confirma la transacción; en Windows el archivo queda abierto.
+    with closing(connect()) as connection:
         rows = connection.execute(sql, (customer.strip().upper(), product, f"%{unaccent(product)}%"))
         return [dict(row) for row in rows]
 
@@ -121,14 +123,14 @@ async def check_credit(
 @mcp.tool(annotations=READ_ONLY)
 def list_products() -> list[str]:
     """Lista los productos de crédito que tienen clientes registrados."""
-    with connect() as connection:
+    with closing(connect()) as connection:
         return [row["product"] for row in connection.execute("SELECT DISTINCT product FROM credits ORDER BY product")]
 
 
 @mcp.resource("schema://credits", mime_type="text/plain")
 def credits_schema() -> str:
     """La definición de la tabla credits: columnas y restricciones."""
-    with connect() as connection:
+    with closing(connect()) as connection:
         return connection.execute("SELECT sql FROM sqlite_master WHERE name = 'credits'").fetchone()["sql"]
 
 
