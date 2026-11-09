@@ -23,3 +23,8 @@ Observed with `langsmith`, `openevals` and `claude-haiku-5-5` while evaluating a
 | A judge is built and fails with "unknown placeholders" | The rubric uses a name the field mapping does not fill | Use `{inputs}`, `{outputs}`, `{reference_outputs}`, `{context}`, or pass another `fields` mapping |
 | `figures_match` fails on "0,5" against "0.5" | The decimal separator differs | Normalize separators in the evaluator for your locale |
 | The sign test says p=1.0 although the means differ | The difference comes from questions only one experiment scored | Compare on paired questions; read the n of each mean |
+| A run with `LANGSMITH_TRACING=true` sends nothing | The environment also has the old `LANGCHAIN_TRACING_V2=false`, which wins | `tracing_context(enabled=True, project_name=...)` around the block, as `evaluation.py` does; in `.env`, change both lines together |
+| Some traces land in the `.env` default project | A traced call ran outside `tracing_context(project_name=...)` | Run every traced call inside it; wrap quick tests in `tracing_context(enabled=False)` |
+| `client.runs.query` returns nothing for a project that has traces | Without `min_start_time` it only looks at the most recent runs | Pass `min_start_time`, for example the project's `start_time` |
+| Deprecation warning for `list_runs` | Retired after 2027-01-31 | `client.runs.query`, as `results.py` does |
+| Deleted traces still show up hours later | `POST /api/v1/runs/delete` only queues the deletion; it can take hours | Before repeating a traced run, either wait until a read-only query returns 0 or, with approval and after checking it only holds those traces, delete the whole project, which is immediate |

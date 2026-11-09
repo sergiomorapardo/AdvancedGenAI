@@ -36,6 +36,8 @@ Then:
 - **Weigh quality against latency and cost**, with the figures of the summary. A tie in quality with lower cost is a decision too.
 - **Variability.** Model answers change between runs; one run per configuration cannot separate a real difference from noise. Propose `num_repetitions` before a decision that matters.
 
+To open one trace by hand beyond the experiment rows (its tree, latency per step), use the ops-traces skill on the experiment's project.
+
 ## Deliver
 
 The summary table, the comparison table, two or three questions where the configurations differ (answer of each and why it failed), the conclusion with its three kinds of statement, and one next step: more questions, repetitions, or the one change to test next. Give the path of `report.md` and the LangSmith links printed by `evaluate`.

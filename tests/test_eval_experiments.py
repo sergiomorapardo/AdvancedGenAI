@@ -170,11 +170,9 @@ def test_results_downloads_runs_feedback_and_traces(monkeypatch, tmp_path):
     )
     example = SimpleNamespace(id=example_id, dataset_id="ds", metadata={"id": "q02"}, outputs=REFERENCE)
 
-    class FakeClient:
-        def list_runs(self, project_name):
-            assert project_name == "exp-a"
-            return iter([root, step])
+    monkeypatch.setattr(results, "list_runs", lambda client, name: [root, step] if name == "exp-a" else [])
 
+    class FakeClient:
         def list_feedback(self, run_ids):
             assert run_ids == [trace_id]
             return iter([SimpleNamespace(run_id=trace_id, key="correctness", score=1.0, comment="ok")])
@@ -215,10 +213,9 @@ def test_results_read_langsmith_shapes_and_wait_for_late_feedback(monkeypatch):
     )
     reads = []
 
-    class LateFeedbackClient:
-        def list_runs(self, project_name):
-            return iter([root])
+    monkeypatch.setattr(results, "list_runs", lambda client, name: [root])
 
+    class LateFeedbackClient:
         def list_feedback(self, run_ids):
             reads.append(1)
             keys = ["correctness"] if len(reads) == 1 else ["correctness", "groundedness"]
@@ -230,13 +227,12 @@ def test_results_read_langsmith_shapes_and_wait_for_late_feedback(monkeypatch):
 
 
 def test_results_flags_empty_experiments_and_repetitions(monkeypatch):
-    """Hallazgos de la revisión de @claude en el PR #41: experimento vacío y num_repetitions."""
+    """Experimento vacío y num_repetitions."""
     results = load_example("results", monkeypatch)
 
-    class EmptyClient:
-        def list_runs(self, project_name):
-            return iter([])
+    monkeypatch.setattr(results, "list_runs", lambda client, name: [])
 
+    class EmptyClient:
         def list_feedback(self, run_ids):
             raise AssertionError("list_feedback(run_ids=[]) no filtra: no debe llamarse")
 
@@ -306,3 +302,50 @@ def test_agent_evaluators_handle_rejected_calls_and_plans(monkeypatch):
     plan = {"tasks": [{"policy": "collections"}, {"policy": "credit"}]}
     result = agents.plan_covers(plan, {"plan_sources": ["collections", "fees"]})
     assert result["score"] is False and result["comment"] == "Missing: ['fees']; Unexpected: ['credit']"
+
+
+def test_results_list_runs_uses_runs_query_from_the_experiment_start(monkeypatch):
+    """client.list_runs se retira después del 31-01-2027: runs.query, acotado por el inicio del experimento."""
+    from langsmith.utils import LangSmithNotFoundError
+
+    results = load_example("results", monkeypatch)
+    project = SimpleNamespace(id=uuid4(), start_time=datetime(2026, 10, 18, tzinfo=UTC))
+    trace_id, example_id = uuid4(), uuid4()
+    calls = []
+
+    class Run:
+        def __init__(self, **data):
+            self.data = data
+
+        def model_dump(self):
+            return dict(self.data)
+
+    rows = [
+        Run(id=str(trace_id), trace_id=str(trace_id), parent_run_ids=[], reference_example_id=str(example_id), name="RAG"),
+        Run(id=str(uuid4()), trace_id=str(trace_id), parent_run_ids=[str(trace_id)], reference_example_id=None, name="retrieve"),
+    ]
+
+    class Runs:
+        async def _rows(self):
+            for run in rows:
+                yield run
+
+        def query(self, **kwargs):
+            calls.append(kwargs)
+            return self._rows()
+
+    class FakeClient:
+        runs = Runs()
+
+        def read_project(self, project_name):
+            if project_name != "exp-a":
+                raise LangSmithNotFoundError("no existe")
+            return project
+
+    root, step = results.list_runs(FakeClient(), "exp-a")
+    # Sin min_start_time la consulta solo mira lo más reciente.
+    assert calls[0]["min_start_time"] == project.start_time and calls[0]["project_ids"] == [str(project.id)]
+    # Los ids vuelven como UUID: el feedback y los ejemplos se cruzan por UUID.
+    assert root.id == trace_id and root.parent_run_id is None and root.reference_example_id == example_id
+    assert step.parent_run_id == trace_id and step.trace_id == trace_id
+    assert results.list_runs(FakeClient(), "nombre-mal-escrito") == []

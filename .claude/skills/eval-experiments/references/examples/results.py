@@ -11,15 +11,20 @@ rows.json (one row per example) and report.md.
 """
 
 import argparse
+import asyncio
 import json
 import time
 from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from math import comb
 from pathlib import Path
 from statistics import mean, median
+from types import SimpleNamespace
+from uuid import UUID
 
 from langsmith import Client
+from langsmith.utils import LangSmithNotFoundError
 from project import PRICE_PER_MILLION, configure
 
 RESULTS = Path(__file__).resolve().parent / "results"
@@ -27,9 +32,58 @@ SMALL_SAMPLE = 20  # below this, a difference is a signal to read the cases, not
 
 
 # --- Download ---------------------------------------------------------------------------
+RUN_FIELDS = [
+    "ID", "TRACE_ID", "PARENT_RUN_IDS", "NAME", "RUN_TYPE", "INPUTS", "OUTPUTS", "ERROR",
+    "START_TIME", "END_TIME", "REFERENCE_EXAMPLE_ID", "PROMPT_TOKENS", "COMPLETION_TOKENS",
+]
+
+
+def run_async(coroutine):
+    """asyncio.run, also from a notebook, whose event loop is already running."""
+    try:
+        asyncio.get_running_loop()
+    except RuntimeError:
+        return asyncio.run(coroutine)
+    with ThreadPoolExecutor(1) as pool:
+        return pool.submit(asyncio.run, coroutine).result()
+
+
+def _uuid(value):
+    return UUID(str(value)) if value else None
+
+
+def list_runs(client: Client, name: str) -> list:
+    """Every run of an experiment with client.runs.query; Client.list_runs is retired after 2027-01-31.
+
+    An experiment is a project: its start_time bounds the query, which without min_start_time only
+    looks at the most recent runs. A name that does not exist returns no runs. Ids come back as text
+    and feedback, examples and parents use UUID, so they are converted here.
+    """
+    try:
+        project = client.read_project(project_name=name)
+    except LangSmithNotFoundError:
+        return []
+
+    async def collect():
+        return [
+            run
+            async for run in client.runs.query(
+                project_ids=[str(project.id)], min_start_time=project.start_time, selects=RUN_FIELDS, page_size=100
+            )
+        ]
+
+    runs = []
+    for run in run_async(collect()):
+        data = run.model_dump()
+        parents = data.pop("parent_run_ids") or []
+        data |= {key: _uuid(data[key]) for key in ("id", "trace_id", "reference_example_id")}
+        runs.append(SimpleNamespace(**data, parent_run_id=_uuid(parents[-1]) if parents else None))
+    return runs
+
+
 def fetch_experiment(client: Client, name: str) -> tuple[list[dict], list[dict]]:
     """One row per example (root run + its feedback) and every run of its traces."""
-    runs = list(client.list_runs(project_name=name))
+    runs = list_runs(client, name)
     roots = [run for run in runs if run.parent_run_id is None]
     feedback = defaultdict(dict)
     # Without roots, list_feedback(run_ids=[]) would not filter: an empty experiment reads nothing.
