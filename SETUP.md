@@ -67,4 +67,5 @@ The graphs registered in `langgraph.json` appear in Studio. Every call to a grap
 - **Wrong Python version:** run `uv run python --version`; it should print 3.12.x. If not, run `uv python install` and `uv sync --locked` again.
 - **Package not found:** run commands through `uv run` (or select the `.venv` kernel in Jupyter) so they use the project environment.
 - **`uv sync --locked` fails:** the lock is out of date with `pyproject.toml`. Pull the latest `main`; do not edit `uv.lock` by hand.
+- **Windows or an Intel Mac:** the lock has wheels for Windows (x64), macOS on Intel and Apple Silicon, and Linux (x64), for Python 3.12 and 3.13. On an Intel Mac with macOS 14, `faiss-cpu` stays below 1.14 because newer versions have no wheel for it. On Windows, L12 and L13 call `prepare_stderr()` so Jupyter can start the MCP servers over stdio.
 - **API key not loaded:** check that `.env` exists in the repository root and contains the keys, then restart the Jupyter kernel.
