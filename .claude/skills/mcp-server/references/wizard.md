@@ -12,7 +12,7 @@ Skip the steps the request already answers. If the person says "you decide", pic
 | 3 · Output | Does an app read fields from the result? | Typed output with a Pydantic model: the SDK publishes the `outputSchema` (Recommended for rows and figures) · Text (Recommended for fragments with citations) | "output" |
 | 4 · Ambiguity | What happens when the input matches several items? | Ask the person with elicitation; clients that cannot ask get every match (Recommended when the person knows the answer) · Return every match and let the model ask · Fail with `ToolError` and the options | "elicitation" |
 | 5 · Transport | How do clients reach it? | stdio: each client starts the script (Recommended on one machine) · stdio and `--http`: also one shared process on a port (index built once) · HTTP only, on an internal server (needs authentication; see `references/security.md`) | "transport" |
-| 6 · Registration | Where is it registered? | Project `.mcp.json`, versioned with the repo (Recommended for a team server) · Only for this person (`claude mcp add --scope local`) · Not registered: only an agent uses it (then hand over to agentic-workflow) | "registration" |
+| 6 · Registration | Where is it registered? | Project `.mcp.json`, versioned with the repo (Recommended for a team server) · Only for this person (`claude mcp add --scope local`) · Not registered: only an agent uses it (then hand over to llm-tools) | "registration" |
 | 7 · Guardrails | What must it never do? (multiSelect) | Read-only connection (Recommended) · Validated inputs and parameters (Recommended) · Resources limited to an allow list (Recommended) · Limit rows and text sizes · Approval in the client before any tool with effects | "guardrails" |
 
 Close the wizard with a **blueprint** before writing code: an ASCII diagram of the server with its tools, resources and prompts (name, arguments, output), the data source and its control, the transport, where it is registered, the files to create and the checks that will prove it works. The server costs nothing to run; say so, and say that an agent using it does spend model calls. Ask for confirmation with a last AskUserQuestion: "Build it like this (Recommended)" · "Change something".
@@ -21,4 +21,4 @@ Close the wizard with a **blueprint** before writing code: an ASCII diagram of t
 
 When the person asks "what is MCP?", "why not an API?", "tool or resource?", answer with the matching diagram and table in `references/concepts.md`, grounded in their server. On delivery, draw the blueprint again with what was actually built.
 
-To build the agent that uses the server, close with a pointer to the agentic-workflow skill. To review a server from someone else, go to `references/security.md`.
+To build the agent that uses the server, close with a pointer to the llm-tools skill. To review a server from someone else, go to `references/security.md`.
