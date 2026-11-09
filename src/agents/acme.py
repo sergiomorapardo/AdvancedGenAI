@@ -1,7 +1,7 @@
 """Agente de soporte de ACME: políticas con citas, cartera de créditos y memoria por conversación.
 
-Junta las piezas del curso: el RAG de L4 sobre las políticas sintéticas de `datasets/`, la
-consulta de solo lectura del servidor MCP de créditos (L20) y la memoria por `thread_id` (L9).
+Junta las piezas del curso: el RAG de L08 sobre las políticas sintéticas de `datasets/`, la
+consulta de solo lectura del servidor MCP de créditos (L12) y la memoria por `thread_id` (L10).
 La API de `src/api` lo sirve con PostgreSQL como checkpointer; LangGraph Studio lo abre como `acme`.
 """
 

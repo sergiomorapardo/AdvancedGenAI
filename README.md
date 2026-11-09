@@ -8,6 +8,17 @@ This course continues [Advanced Topics in Analytics](https://github.com/sergiomo
 
 Every example shares one case: **ACME**, a fictional fintech whose support assistant answers from its policies with citations, looks up the credit portfolio through tools and hands money movements to a person. All data and documents are synthetic.
 
+## Learning outcomes
+
+By the end of the course you will be able to:
+
+- Connect language models to documents, data and tools, and answer with citations.
+- Choose and build workflows with state, memory, specialists and human approval, and explain why a pattern fits better than a simpler one.
+- Evaluate answers and agent behaviour with datasets, code evaluators and an LLM judge calibrated against human review, comparing quality, cost and latency.
+- Deploy an assistant as an API with persistent memory, diagnose its failures and evaluate changes again before shipping them.
+
+Three guides go with the schedule: [agentic patterns](docs/patterns.md) compares the workflow structures and when to use each, [readings](docs/readings.md) lists book chapters and code for every week, and the [demo guide](docs/demo.md) walks through the week 12 API.
+
 ## Schedule
 
 *Draft sequence of 12 weekly sessions. Calendar dates will be added once the course is approved and scheduled.*
@@ -77,12 +88,13 @@ curl -N http://127.0.0.1:8000/chat/demo-thread/stream \
   -H 'Content-Type: application/json' -d '{"message":"¿Y todavía puedo reestructurarlo?"}'
 ```
 
-Reuse a `chat_id` to continue a conversation, even after restarting the API; the stream endpoint sends SSE `data:` events and hides tool output. Endpoint schemas are at `http://127.0.0.1:8000/docs`, and [`docs/sql/checkpoints.sql`](docs/sql/checkpoints.sql) inspects the saved threads. This is a local teaching demo without authentication: keep it on loopback. Each turn calls a paid model, and the first policy search downloads the local embeddings model (~220 MB). `docker compose down` keeps the `postgres_data` volume.
+Reuse a `chat_id` to continue a conversation, even after restarting the API; the stream endpoint sends SSE `data:` events and hides tool output. The [demo guide](docs/demo.md) explains each turn, its model calls, a test script and how to diagnose errors. Endpoint schemas are at `http://127.0.0.1:8000/docs`, and [`docs/sql/checkpoints.sql`](docs/sql/checkpoints.sql) inspects the saved threads. This is a local teaching demo without authentication: keep it on loopback. Each turn calls a paid model, and the first policy search downloads the local embeddings model (~220 MB). `docker compose down` keeps the `postgres_data` volume.
 
 ## Repository
 
 - **LangGraph Studio:** `uv run langgraph dev` opens the graphs in [`langgraph.json`](langgraph.json), including `acme` and the single-file (`contact`) and modular (`support`) versions of the same contact agent.
 - **Claude Code:** five skills in [`.claude/skills/`](.claude/skills/), one per block of the course — [`/agentic-workflow`](.claude/skills/agentic-workflow/SKILL.md) builds chains, tool agents, RAG and memory (weeks 1–5), [`/evaluate-app`](.claude/skills/evaluate-app/SKILL.md) compares two configurations with LangSmith, including agents' tool calls and routes (week 6), [`/mcp-server`](.claude/skills/mcp-server/SKILL.md) builds or reviews MCP servers (week 7), [`/agent-patterns`](.claude/skills/agent-patterns/SKILL.md) builds LangGraph workflows: chaining, routing, parallel branches, human approval, orchestrator-workers and evaluator-optimizer (weeks 8–11), and [`/deploy-app`](.claude/skills/deploy-app/SKILL.md) serves an app as an API with persistent threads and streaming (week 12). Hooks in [`.claude/settings.json`](.claude/settings.json) check Jinja templates, apps and MCP servers without calling a model; [`.mcp.json`](.mcp.json) registers the course servers.
+- **Guides:** [agentic patterns](docs/patterns.md), [readings by week](docs/readings.md) and the [API demo](docs/demo.md).
 - **Tests and CI:** the tests run offline, simulating model responses. GitHub Actions requires `unit-tests` and `langgraph-startup` before merging into `main`; the `quality` job runs pre-commit hooks, Bandit and the package build, and reports coverage, Ruff, mypy and `pip-audit` as advisory. Dependabot proposes weekly updates; see [dependency maintenance](docs/dependency-maintenance.md).
 
 ```sh
