@@ -6,6 +6,7 @@ import sqlite3
 import sys
 import tempfile
 import unittest
+from contextlib import closing
 from unittest.mock import patch
 
 from langchain_core.embeddings import DeterministicFakeEmbedding
@@ -26,7 +27,7 @@ class CreditsServerChecks(unittest.TestCase):
         # Base temporal: las pruebas no tocan data/ del repositorio.
         cls.workdir = tempfile.TemporaryDirectory()
         database = Path(cls.workdir.name) / "credits.db"
-        with sqlite3.connect(database) as setup:
+        with closing(sqlite3.connect(database)) as setup, setup:
             setup.executescript((root / "datasets" / "acme_credits.sql").read_text(encoding="utf-8"))
         with patch.dict(os.environ, {"CREDITS_DB": str(database)}):
             cls.server = importlib.reload(importlib.import_module("agents.servers.credits"))
@@ -78,8 +79,8 @@ class CreditsServerChecks(unittest.TestCase):
         self.assertEqual([row["code"] for row in everything.structured_content["result"]], ["CEX", "CLI"])
 
     def test_connection_cannot_write(self):
-        with self.assertRaises(sqlite3.OperationalError):
-            self.server.connect().execute("DELETE FROM credits")
+        with closing(self.server.connect()) as connection, self.assertRaises(sqlite3.OperationalError):
+            connection.execute("DELETE FROM credits")
 
 
 class DocumentsServerChecks(unittest.TestCase):
@@ -126,3 +127,65 @@ class DocumentsServerChecks(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class WindowsKernelStderrChecks(unittest.TestCase):
+    """En Windows, el sys.stderr de ipykernel no tiene fileno() y stdio no arranca el servidor."""
+
+    def kernel_stderr(self):
+        from ipykernel.iostream import OutStream
+
+        return OutStream.__new__(OutStream)  # así queda sys.stderr del kernel en Windows
+
+    def test_prepare_stderr_only_acts_on_windows(self):
+        import io
+
+        from agents.servers import prepare_stderr
+
+        stderr = self.kernel_stderr()
+        with patch.object(sys, "stderr", stderr), patch.object(sys, "platform", "darwin"):
+            prepare_stderr()
+        with self.assertRaises(io.UnsupportedOperation):
+            stderr.fileno()  # fuera de Windows no se toca
+        with patch.object(sys, "stderr", stderr), patch.object(sys, "platform", "win32"):
+            prepare_stderr()
+        descriptor = stderr.fileno()
+        try:
+            self.assertTrue(os.fstat(descriptor))
+        finally:
+            os.close(descriptor)
+
+    def test_stdio_server_starts_from_a_windows_kernel(self):
+        from langchain.mcp import MCPAdapter
+        from mcp import StdioServerParameters
+
+        from agents.servers import prepare_stderr
+
+        stderr = self.kernel_stderr()
+        workdir = tempfile.TemporaryDirectory()
+        self.addCleanup(workdir.cleanup)
+        database = Path(workdir.name) / "credits.db"
+        with closing(sqlite3.connect(database)) as setup, setup:
+            setup.executescript((root / "datasets" / "acme_credits.sql").read_text(encoding="utf-8"))
+        env = {**os.environ, "CREDITS_DB": str(database), "PYTHONPATH": str(root / "src")}
+        command = [sys.executable, "-m", "agents.servers.credits"]
+        server = StdioServerParameters(command=command[0], args=command[1:], env=env)
+        config = {"mcpServers": {"creditos": {"command": command[0], "args": command[1:], "env": env}}}
+
+        async def go():
+            # Los dos clientes de L12 y L13 heredan el sys.stderr del kernel.
+            async with Client(server) as client:
+                listed = await client.list_tools()
+            async with MCPAdapter(config) as adapter:
+                adapted = await adapter.list_tools()
+            return listed, adapted
+
+        with patch.object(sys, "stderr", stderr):
+            with patch.object(sys, "platform", "win32"):
+                prepare_stderr()
+            try:
+                listed, adapted = run(go())
+            finally:
+                os.close(stderr.fileno())
+        self.assertEqual(sorted(tool.name for tool in listed.tools), ["check_credit", "list_products"])
+        self.assertEqual(sorted(tool.name for tool in adapted), ["check_credit", "list_products"])
