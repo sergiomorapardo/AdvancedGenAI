@@ -42,3 +42,10 @@
 - Apply corrections to the lowest layer that owns the change, then update dependent layers in order and verify the resulting ancestry and diffs.
 - Merge stacked pull requests from bottom to top using squash merge. After each merge, verify that GitHub correctly rebases or retargets the remaining stack before continuing.
 
+
+## Claude Code skills
+
+- Skills live in `.claude/skills/<area>-<capability>/`, in English and kebab-case, with a closed set of areas: `llm` (pieces around one model call: prompts, tools, RAG), `agentic` (graphs, memory, approval and patterns with LangGraph), `mcp`, `eval` and `ops` (operating what already runs: traces, deployment). One skill, one responsibility: if a new skill fits no area, agree on it before creating another area.
+- Each description says what the skill does, when to use it (`Use it` or `Use when`) and which skill to use for what it does not cover (`Not for ... (use <skill>)`), in at most 950 characters.
+- Only `references/project.md` and `references/examples/project.py` know this repository. `project.py` and `run_log.py` are the same file in every skill that generates apps. `tests/test_skills.py` checks all of this without calling a model.
+- Presentations already published may name earlier skills; the README keeps the correspondence instead of editing the slides.

@@ -82,7 +82,21 @@ Reuse a `chat_id` to continue a conversation, even after restarting the API; the
 ## Repository
 
 - **LangGraph Studio:** `uv run langgraph dev` opens the graphs in [`langgraph.json`](langgraph.json), including `acme` and the single-file (`contact`) and modular (`support`) versions of the same contact agent.
-- **Claude Code:** five skills in [`.claude/skills/`](.claude/skills/), one per block of the course — [`/agentic-workflow`](.claude/skills/agentic-workflow/SKILL.md) builds chains, tool agents, RAG and memory (weeks 1–5), [`/evaluate-app`](.claude/skills/evaluate-app/SKILL.md) compares two configurations with LangSmith, including agents' tool calls and routes (week 6), [`/mcp-server`](.claude/skills/mcp-server/SKILL.md) builds or reviews MCP servers (week 7), [`/agent-patterns`](.claude/skills/agent-patterns/SKILL.md) builds LangGraph workflows: chaining, routing, parallel branches, human approval, orchestrator-workers and evaluator-optimizer (weeks 8–11), and [`/deploy-app`](.claude/skills/deploy-app/SKILL.md) serves an app as an API with persistent threads and streaming (week 12). Hooks in [`.claude/settings.json`](.claude/settings.json) check Jinja templates, apps and MCP servers without calling a model; [`.mcp.json`](.mcp.json) registers the course servers.
+- **Claude Code:** nine skills in [`.claude/skills/`](.claude/skills/), named `<area>-<capability>` with five areas (`llm`, `agentic`, `mcp`, `eval`, `ops`), one responsibility each:
+
+  | Skill | Builds or does | Weeks |
+  | :-- | :-- | :-- |
+  | [`/llm-prompts`](.claude/skills/llm-prompts/SKILL.md) | A fixed-step chain: chat or Jinja template, structured output | 1–2 |
+  | [`/llm-tools`](.claude/skills/llm-tools/SKILL.md) | A tool agent: read-only tools, a public API, MCP tools with elicitation | 3, 7 |
+  | [`/llm-rag`](.claude/skills/llm-rag/SKILL.md) | RAG with `[file, p. N]` citations, FAISS or Chroma, follow-up rewriting and multi-query | 4–5 |
+  | [`/agentic-memory`](.claude/skills/agentic-memory/SKILL.md) | Memory per conversation and human approval before an action | 5, 9 |
+  | [`/eval-experiments`](.claude/skills/eval-experiments/SKILL.md) | Datasets, code evaluators, a calibrated judge and experiments, including agents' tool calls and routes | 6, 11 |
+  | [`/mcp-server`](.claude/skills/mcp-server/SKILL.md) | MCP servers, and a review of third-party ones | 7 |
+  | [`/agentic-patterns`](.claude/skills/agentic-patterns/SKILL.md) | LangGraph workflows: chaining, routing, parallel branches, orchestrator-workers, evaluator-optimizer | 8–11 |
+  | [`/ops-traces`](.claude/skills/ops-traces/SKILL.md) | Reads what a run left in LangSmith: traces, calls, latency, cost, branches, errors | 6–12 |
+  | [`/ops-deploy`](.claude/skills/ops-deploy/SKILL.md) | Serves an app as an API with persistent threads and streaming | 12 |
+
+  The W11 and W12 presentations use earlier names: `agent-patterns` is now `agentic-patterns`, and `deploy-app` is `ops-deploy`; `agentic-workflow` was split into the `llm-*` skills and `agentic-memory`, and `evaluate-app` is `eval-experiments`. Hooks in [`.claude/settings.json`](.claude/settings.json) check Jinja templates, apps and MCP servers without calling a model; [`.mcp.json`](.mcp.json) registers the course servers.
 - **Tests and CI:** the tests run offline, simulating model responses. GitHub Actions requires `unit-tests` and `langgraph-startup` before merging into `main`; the `quality` job runs pre-commit hooks, Bandit and the package build, and reports coverage, Ruff, mypy and `pip-audit` as advisory. Dependabot proposes weekly updates; see [dependency maintenance](docs/dependency-maintenance.md).
 
 ```sh
